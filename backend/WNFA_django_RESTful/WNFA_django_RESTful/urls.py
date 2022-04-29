@@ -18,5 +18,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('', include('WNFA_text_to_art'))
+    path('api/', include('WNFA_text_to_art.urls'))
 ]

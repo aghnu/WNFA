@@ -2,19 +2,26 @@ from dataclasses import field
 from rest_framework import serializers
 from .models import Art, Record
 
-class RecordSerializerGETorPOST(serializers.ModelSerializer):
+class RecordSerializer(serializers.ModelSerializer):
     class Meta:
         model = Record
         fields = [
-            'request_time',
             'poem_en',
             'poem_cn',
             'art_id'
         ]
 
-class ArtSerializerGET(serializers.ModelSerializer):
+# class RecordListSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Record
+#         fields = [
+#             'id',
+#         ]
+
+class ArtSerializer(serializers.ModelSerializer):
     class Meta:
         model = Art
         fields = [
+            'id',
             'image_binary',
         ]

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        /* .cam {
+            height: 100%;
+            width: 100%;
+        } */
+    </style>
+    <script>
+        window.addEventListener('load', () => {
+
+            let video = document.querySelector("#video");
+            let canvas = document.querySelector("#canvas");
+            
+            navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+                .then((stream)=>{
+                    video.srcObject = stream;
+                })
+
+            video.addEventListener('click', function() {
+                canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+                let image_data_url = canvas.toDataURL('image/jpeg');
+
+                // data url of the image
+                console.log(image_data_url);
+            });
+        });
+
+    </script>
+</head>
+<body>
+    <video id="video" width="320" height="240" autoplay></video>
+    <canvas id="canvas" width="320" height="240"></canvas>  
+</body>
+</html>

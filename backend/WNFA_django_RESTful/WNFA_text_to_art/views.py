@@ -101,12 +101,12 @@ class ArtList(APIView):
 class ArtDetail(APIView):
     def get_art(self, art_id):
         try:
-            print(Art.objects.get(id=art_id))
+            return Art.objects.get(id=art_id)
         except Art.DoesNotExist:
             raise Http404
 
     def get(self, request, art_id):
         art = self.get_art(art_id)
-        art_base64 = base64.b64encode(art)
+        art_base64 = base64.b64encode(art.image_binary)
 
         return Response({"id": art.id, "data": art_base64}, status=status.HTTP_200_OK)

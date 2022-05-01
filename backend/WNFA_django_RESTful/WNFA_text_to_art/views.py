@@ -7,6 +7,51 @@ from django.core.exceptions import BadRequest
 from .models import Record, Art
 from .serializers import RecordSerializer, ArtSerializer
 
+from WNFA_text_to_art_generator.art_generator import ArtGeneratorFromImage
+from PIL import Image
+import numpy as np
+import io
+import base64
+
+
+class TicketSubmission(APIView):
+    def post(self, request):
+        try:
+            try:
+                # generate art 
+                img_base64 = request.data["data"]
+                img_decoded = base64.b64decode(img_base64)
+                img_pil = Image.open(io.BytesIO(img_decoded))
+                img_np = np.array(img_pil)
+
+                generator = ArtGeneratorFromImage(img_np)
+                img_gen_obj = generator.generate()
+            except:
+                raise BadRequest("Failed to generate Art")
+            
+            # create record and art
+            try:
+                art_new = Art(
+                    image_binary = img_gen_obj.image_bytes
+                )
+                art_new.save()
+
+                record_new = Record(
+                    poem_en = img_gen_obj.text_en,
+                    poem_cn = img_gen_obj.text_cn,
+                    art_id = art_new.id
+                )
+                record_new.save()
+
+            except:
+                raise BadRequest("Failed to store Art or Record")
+
+            return Response({}, status=status.HTTP_200_OK)
+        
+        except:
+            raise BadRequest("Failed to process ticket")
+
+
 class RecordList(APIView):
     def get(self, request):
         select = request.query_params.get("select", None)
@@ -32,22 +77,6 @@ class RecordList(APIView):
             return Response(
                 {'total':len(serializer.data), 'records':serializer.data},
                 status=status.HTTP_200_OK)            
-
-    def post(self, request):
-        serializer = RecordSerializer(data=request.data)
-        
-        # mock art generator process for testing
-        new_art = Art(image_binary = bytes())
-        new_art.save()
-
-        request.data.update({"art_id": new_art.id})
-        # the end of mock
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response({}, status=status.HTTP_200_OK)
-        else:
-            return Response({}, status=status.HTTP_400_BAD_REQUEST)
 
 class RecordDetail(APIView):
     def get_record(self, record_id):
@@ -78,5 +107,6 @@ class ArtDetail(APIView):
 
     def get(self, request, art_id):
         art = self.get_art(art_id)
-        serializer = ArtSerializer(art)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        art_base64 = base64.b64encode(art)
+
+        return Response({"id": art.id, "data": art_base64}, status=status.HTTP_200_OK)

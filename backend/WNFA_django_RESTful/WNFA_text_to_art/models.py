@@ -1,7 +1,7 @@
 from django.db import models
 
 class Art(models.Model):
-    image_binary = models.BinaryField()
+    data = models.BinaryField()
 
 class Record(models.Model):
     request_time = models.DateTimeField(auto_now_add=True)

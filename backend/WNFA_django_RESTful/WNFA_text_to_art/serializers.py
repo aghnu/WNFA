@@ -23,5 +23,5 @@ class ArtSerializer(serializers.ModelSerializer):
         model = Art
         fields = [
             'id',
-            'image_binary',
+            'data',
         ]

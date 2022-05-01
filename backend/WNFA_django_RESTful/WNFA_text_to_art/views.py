@@ -32,7 +32,7 @@ class TicketSubmission(APIView):
             # create record and art
             try:
                 art_new = Art(
-                    image_binary = img_gen_obj.image_bytes
+                    data = img_gen_obj.image_bytes
                 )
                 art_new.save()
 
@@ -107,6 +107,6 @@ class ArtDetail(APIView):
 
     def get(self, request, art_id):
         art = self.get_art(art_id)
-        art_base64 = base64.b64encode(art.image_binary)
+        art_base64 = base64.b64encode(art.data)
 
         return Response({"id": art.id, "data": art_base64}, status=status.HTTP_200_OK)

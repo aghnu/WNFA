@@ -7,11 +7,62 @@
     <title>Document</title>
     <style>
         html {
-            -moz-filter: grayscale(100%);
-            -webkit-filter: grayscale(100%);
-            filter: gray; /* IE6-9 */
+            /* -moz-filter: grayscale(100%) sepia(100%) hue-rotate(90deg);
+            -webkit-filter: grayscale(100%) sepia(100%) hue-rotate(90deg); */
+            /* filter: grayscale(100%) sepia(100%) hue-rotate(90deg); */
+            background-color: black;
+        }
+
+        /* p {
+            color: grey;
+            font-family: Roboto;
+        } */
+
+        #canvas {
+            display: none;
+        }
+
+
+
+        /* #video-container {
+            width: 100vw;
+            height: 95vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            filter: grayscale(100%) sepia(100%) hue-rotate(90deg);
+            margin: auto;
+        } */
+
+        #top-layer,
+        #second-layer {
+            position: fixed;
+            display: flex;
+            width: 100vw;
+            top: 0;
+            left: 0;
+        }
+
+        #top-layer {
+            z-index: 1000;
+        }
+
+        #second-layer {
+            z-index: 999;
+        }
+
+        #monitor-frame {
+            height: 100vh;
+            margin: auto;
+        }
+
+        #video {
+            height: 100vh;
+            margin: auto;
             filter: grayscale(100%);
         }
+
+
     </style>
     <script>
 
@@ -58,7 +109,14 @@
     </script>
 </head>
 <body>
-    <video id="video" width="320" height="240" autoplay></video>
-    <canvas id="canvas" width="320" height="240"></canvas>  
+    <div id="top-layer">
+        <img id="monitor-frame" src="./static/img/monitor_frame.png">
+    </div>
+    <div id="second-layer">
+        <video id="video" autoplay></video>
+    </div>
+
+    <canvas id="canvas"></canvas>      
+ 
 </body>
 </html>

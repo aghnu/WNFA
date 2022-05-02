@@ -16,7 +16,7 @@ Team
 
 <p align="left">
   <ul>
-    <li>Yuan, Fan (Artist)</li>
+    <li>Yuan, Fang (Artist)</li>
     <li>Gengyuan, Huang (Artist, Programmer)</li>
   </ul>
 </p>

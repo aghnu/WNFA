@@ -12,22 +12,44 @@
         } */
     </style>
     <script>
+
+        const endpointURL = "localhost:8000/";
+        const submitAPIURL = "api/submit/ticket";
+
+        function submitPhotoTicket(base64) {
+            fetch('http://' + endpointURL + submitAPIURL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    'data': base64,
+                })
+            })
+                .then(() => {})
+                .catch((e) => {
+                    console.log('Error', e);
+                });
+        }
+
+
         window.addEventListener('load', () => {
 
-            let video = document.querySelector("#video");
-            let canvas = document.querySelector("#canvas");
+            const video = document.querySelector("#video");
+            const canvas = document.querySelector("#canvas");
             
-            navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+            navigator.mediaDevices.getUserMedia({ 'video': true, 'audio': false })
                 .then((stream)=>{
                     video.srcObject = stream;
                 })
 
-            video.addEventListener('click', function() {
+            video.addEventListener('click', () => {
                 canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-                let image_data_url = canvas.toDataURL('image/jpeg');
+                let image_data_url = canvas.toDataURL('image/jpeg').split(';base64,')[1];
 
                 // data url of the image
                 console.log(image_data_url);
+                submitPhotoTicket(image_data_url);
             });
         });
 

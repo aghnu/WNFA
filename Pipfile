@@ -13,6 +13,7 @@ django-filter = "*"
 numpy = "*"
 pillow = "*"
 scikit-image = "*"
+django-cors-headers = "*"
 
 [dev-packages]
 

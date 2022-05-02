@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<script>
+
+    const endpointURL = "localhost:8000/";
+    const artsAPIURL = "api/arts";
+    const recordsAPIURL = "api/records";
+    
+    function getMostNRecentRecord(recentN, callback) {
+        fetch("http://" + endpointURL + recordsAPIURL + "?select=" + recentN)
+            .then((r) => {
+                r.json().then((d) => {
+                    callback(d);
+                })
+            })
+            .catch((e) => {
+                console.log("error", e);
+            }); 
+    }
+
+    function getArtsByID(id, callback) {
+        fetch("http://" + endpointURL + artsAPIURL + "/" + id)
+            .then((r) => {
+                r.json().then((d) => {
+                    callback(d);
+                })
+            })
+            .catch((e) => {
+                console.log("error", e);
+            }); 
+    }
+
+    
+    window.addEventListener('load', () => {
+
+
+        const image = document.querySelector('#showcase');
+
+        // setInterval(() => {
+            
+        // }, 3000);
+
+        getMostNRecentRecord(0, (d) => {
+            getArtsByID(d.art_id, (d) => {
+                image.src = "data:image/jpeg; base64," + d.data;
+            })
+        });
+
+
+ 
+
+    });
+    
+</script>
+<body>
+    <img id="showcase">
+</body>
+</html>

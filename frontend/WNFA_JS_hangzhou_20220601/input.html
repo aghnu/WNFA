@@ -53,11 +53,12 @@
 
         #monitor-frame {
             height: 100vh;
+            width: 100vw;
             margin: auto;
         }
 
         #video {
-            height: 100vh;
+            width: 100vw;
             margin: auto;
             filter: grayscale(100%);
         }
@@ -65,9 +66,23 @@
 
     </style>
     <script>
-
         const endpointURL = "localhost:8000/";
         const submitAPIURL = "api/submit/ticket";
+        const actions = {};
+
+        function addKeyPressAction(key, action) {
+            actions[key] = action;
+        }
+
+        function keyPress(key, actions) {
+            if (key.keyCode in actions) {
+                actions[key.keyCode]();
+            }
+        }
+
+        function startListeningForKeyPress() {
+            document.addEventListener("keydown", (k) => { this.keyPress(k, actions) });
+        }
 
         function submitPhotoTicket(base64) {
             fetch('http://' + endpointURL + submitAPIURL, {
@@ -85,7 +100,12 @@
                 });
         }
 
+        // setup keylistener
+        let enterKeyListener = () => {};
+        addKeyPressAction(13, () => { enterKeyListener() }); 
+        startListeningForKeyPress();
 
+        // after DOM loaded
         window.addEventListener('load', () => {
 
             const video = document.querySelector("#video");
@@ -94,16 +114,21 @@
             navigator.mediaDevices.getUserMedia({ 'video': true, 'audio': false })
                 .then((stream)=>{
                     video.srcObject = stream;
+                    video.play();
                 })
 
-            video.addEventListener('click', () => {
-                canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-                let image_data_url = canvas.toDataURL('image/jpeg').split(';base64,')[1];
+            // video.addEventListener('click', () => {
+            //     canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            //     let image_data_url = canvas.toDataURL('image/jpeg').split(';base64,')[1];
 
-                // data url of the image
-                console.log(image_data_url);
-                submitPhotoTicket(image_data_url);
-            });
+            //     // data url of the image
+            //     console.log(image_data_url);
+            //     submitPhotoTicket(image_data_url);
+            // });
+
+            enterKeyListener = () => {
+                console.log("pressed");
+            }
         });
 
     </script>
@@ -113,7 +138,7 @@
         <img id="monitor-frame" src="./static/img/monitor_frame.png">
     </div>
     <div id="second-layer">
-        <video id="video" autoplay></video>
+        <video id="video"></video>
     </div>
 
     <canvas id="canvas"></canvas>      

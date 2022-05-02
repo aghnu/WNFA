@@ -22,7 +22,7 @@ Team
 </p>
 
 <h2 align="left">
-Resources List
+Resources
 </h2>
 
 <p align="left">

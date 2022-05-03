@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
+
         @font-face {
             font-family: "Classic Console Neue";
             font-size: normal;
@@ -13,35 +14,15 @@
             src: url(./static/font/classic_console_neue.ttf) format("truetype");
         }
 
-
         html {
-            /* -moz-filter: grayscale(100%) sepia(100%) hue-rotate(90deg);
-            -webkit-filter: grayscale(100%) sepia(100%) hue-rotate(90deg); */
-            /* filter: grayscale(100%) sepia(100%) hue-rotate(90deg); */
             background-color: black;
             font-family: "Classic Console Neue";
         }
 
-        /* p {
-            color: grey;
-            font-family: Roboto;
-        } */
 
         #canvas {
             display: none;
         }
-
-
-
-        /* #video-container {
-            width: 100vw;
-            height: 95vh;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            filter: grayscale(100%) sepia(100%) hue-rotate(90deg);
-            margin: auto;
-        } */
 
         #terminal-layer {
             position: fixed;
@@ -55,10 +36,11 @@
             padding: 5vh 7vw 5vh 7vw;
             line-height: 0;
             filter: grayscale(100%) sepia(100%) hue-rotate(90deg);
+            display: none;
         }
 
         #logo {
-            height: 6vh;
+            height: 5vh;
             margin: 0;
             padding: 0;
         }
@@ -86,10 +68,17 @@
             margin: auto;
         }
 
+        #monitor-engraving {
+            position: fixed;
+            width: 300px;
+            top: 71vh;
+            right: 19vw;
+        }
+
         #video {
-            width: 100vw;
+            height: 100vh;
             margin: auto;
-            filter: grayscale(100%);
+            filter: grayscale(100%) sepia(100%) hue-rotate(90deg);
         }
 
 
@@ -163,6 +152,12 @@
 
             enterKeyListener = () => {
                 console.log("pressed");
+                canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+                let image_data_url = canvas.toDataURL('image/jpeg').split(';base64,')[1];
+
+                // data url of the image
+                console.log(image_data_url);
+                // submitPhotoTicket(image_data_url);
             }
         });
 
@@ -171,10 +166,11 @@
 <body>
     <div id="top-layer">
         <img id="monitor-frame" src="./static/img/monitor_frame.png">
-
+        <img id="monitor-engraving" src="./static/img/monitor_engraving.png">
     </div>
     <div id="second-layer">
         <video id="video"></video>
+        <canvas id="canvas"></canvas> 
         <div id="terminal-layer">
             <p>---------------------</p>
             <img id="logo" src="./static/img/logo-grey.png">
@@ -187,7 +183,7 @@
         </div>        
     </div>
 
-    <canvas id="canvas"></canvas>      
+        
  
 </body>
 </html>

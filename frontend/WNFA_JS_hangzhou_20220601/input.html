@@ -102,7 +102,7 @@
             document.addEventListener("keydown", (k) => { this.keyPress(k, actions) });
         }
 
-        function submitPhotoTicket(base64) {
+        function submitPhotoTicket(base64, callback = () => {}) {
             fetch('http://' + endpointURL + submitAPIURL, {
                 method: 'POST',
                 headers: {
@@ -112,16 +112,24 @@
                     'data': base64,
                 })
             })
-                .then(() => {})
+                .then(() => {
+                    callback(suc=true);
+                })
                 .catch((e) => {
                     console.log('Error', e);
+                    callback(suc=false);
                 });
         }
 
-        async function connectCam (vid) {
+        function takePhotoToBase64(vid, canvas) {
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            return canvas.toDataURL('image/jpeg').split(';base64,')[1];
+        }
+
+        async function connectCam (vid, callback = () => {}) {
             let stream = await navigator.mediaDevices.getUserMedia({video: true, audio: false});
             vid.srcObject = stream;
-            vid.play();
+            callback();
         }
 
         // setup keylistener
@@ -134,31 +142,53 @@
 
             const video = document.querySelector("#video");
             const canvas = document.querySelector("#canvas");
-            
+            const terminal_layer = document.querySelector("#terminal-layer");
+
+            const terminalLayerClear = () => {};
+
+            const enterKeyhandler = () => {
+                enterKeyListener = () => {};                                            // disable enter key for the duration
+                    video.pause();                                                      // pause video
+                    terminal_layer.style.display = "block";                             // turn on terminal layer
+
+                    submitPhotoTicket(takePhotoToBase64(video, canvas), (suc) => {      // take a photo and submit, then waiting for response
+                        if (suc) {
+                            // success
+                            // do terminal message
+                            video.play();                               // start video
+                            terminal_layer.style.display = "none";       // remove terminal layer
+                            terminalLayerClear();                       // clear terminal
+                            enterKeyListener = enterKeyhandler;         // reenable enter key
+                            
+                        } else {
+                            // error
+                            // display terminal message error
+                            // countdown
+                            
+                            // return to working state
+                            video.play();                               // start video
+                            terminal_layer.style.display = "none";       // remove terminal layer
+                            terminalLayerClear();                       // clear terminal
+                            enterKeyListener = enterKeyhandler;         // reenable enter key
+                        }
+                    });
+
+                    // message displaying during waiting
+            }
+
+            const initLogic = () => {
+                // play video
+                video.play();
+                // setup enter key
+                enterKeyListener = enterKeyhandler;
+            }
+
             if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
                 alert("Please make sure your have a camera connected");
             } else {
-                connectCam(video);
+                connectCam(video, initLogic);
             }
 
-            // video.addEventListener('click', () => {
-            //     canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-            //     let image_data_url = canvas.toDataURL('image/jpeg').split(';base64,')[1];
-
-            //     // data url of the image
-            //     console.log(image_data_url);
-            //     submitPhotoTicket(image_data_url);
-            // });
-
-            enterKeyListener = () => {
-                console.log("pressed");
-                canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-                let image_data_url = canvas.toDataURL('image/jpeg').split(';base64,')[1];
-
-                // data url of the image
-                console.log(image_data_url);
-                // submitPhotoTicket(image_data_url);
-            }
         });
 
     </script>

@@ -6,11 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
+        @font-face {
+            font-family: "Classic Console Neue";
+            font-size: normal;
+            font-weight: 400;
+            src: url(./static/font/classic_console_neue.ttf) format("truetype");
+        }
+
+
         html {
             /* -moz-filter: grayscale(100%) sepia(100%) hue-rotate(90deg);
             -webkit-filter: grayscale(100%) sepia(100%) hue-rotate(90deg); */
             /* filter: grayscale(100%) sepia(100%) hue-rotate(90deg); */
             background-color: black;
+            font-family: "Classic Console Neue";
         }
 
         /* p {
@@ -41,9 +50,17 @@
             background-color: black;
             top: 10vh;
             left: 20vw;
-            color: white;
-            font-size: 3.5vh;
-            padding: 5vh 5vw 5vh 5vw;
+            color: grey;
+            font-size: 3vh;
+            padding: 5vh 7vw 5vh 7vw;
+            line-height: 0;
+            filter: grayscale(100%) sepia(100%) hue-rotate(90deg);
+        }
+
+        #logo {
+            height: 6vh;
+            margin: 0;
+            padding: 0;
         }
 
         #top-layer,
@@ -159,7 +176,14 @@
     <div id="second-layer">
         <video id="video"></video>
         <div id="terminal-layer">
-            <p>Testing</p>
+            <p>---------------------</p>
+            <img id="logo" src="./static/img/logo-grey.png">
+            <p>System version: 0.1.2</p>
+            <p>Date: 2022.05.02</p>
+            <p>---------------------</p>
+            <p>loading...</p>
+            <p>closing camera stream...</p>
+            <p>processing emotion...</p>
         </div>        
     </div>
 

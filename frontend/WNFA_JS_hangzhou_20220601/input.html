@@ -34,6 +34,18 @@
             margin: auto;
         } */
 
+        #terminal-layer {
+            position: fixed;
+            height: 60vh;
+            width: 60vw;
+            background-color: black;
+            top: 10vh;
+            left: 20vw;
+            color: white;
+            font-size: 3.5vh;
+            padding: 5vh 5vw 5vh 5vw;
+        }
+
         #top-layer,
         #second-layer {
             position: fixed;
@@ -100,6 +112,12 @@
                 });
         }
 
+        async function connectCam (vid) {
+            let stream = await navigator.mediaDevices.getUserMedia({video: true, audio: false});
+            vid.srcObject = stream;
+            vid.play();
+        }
+
         // setup keylistener
         let enterKeyListener = () => {};
         addKeyPressAction(13, () => { enterKeyListener() }); 
@@ -111,11 +129,11 @@
             const video = document.querySelector("#video");
             const canvas = document.querySelector("#canvas");
             
-            navigator.mediaDevices.getUserMedia({ 'video': true, 'audio': false })
-                .then((stream)=>{
-                    video.srcObject = stream;
-                    video.play();
-                })
+            if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+                alert("Please make sure your have a camera connected");
+            } else {
+                connectCam(video);
+            }
 
             // video.addEventListener('click', () => {
             //     canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -136,9 +154,13 @@
 <body>
     <div id="top-layer">
         <img id="monitor-frame" src="./static/img/monitor_frame.png">
+
     </div>
     <div id="second-layer">
         <video id="video"></video>
+        <div id="terminal-layer">
+            <p>Testing</p>
+        </div>        
     </div>
 
     <canvas id="canvas"></canvas>      

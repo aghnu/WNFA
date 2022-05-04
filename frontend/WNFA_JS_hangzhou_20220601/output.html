@@ -6,6 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
+<style>
+    html {
+        background-color: black;
+    }
+
+    #showcase {
+        height: 100vh;
+        width: 100vw;
+        object-fit: contain;
+    }
+</style>
 <script>
 
     const endpointURL = "localhost:8000/";
@@ -39,21 +50,25 @@
     
     window.addEventListener('load', () => {
 
-
         const image = document.querySelector('#showcase');
 
-        // setInterval(() => {
-            
-        // }, 3000);
+        let urlHash = window.location.hash;
+        console.log(urlHash);
+        let recentN = (urlHash === '') ? 0 : parseInt(urlHash.split('#')[1]);
+        let old_art_id= null;
 
-        getMostNRecentRecord(0, (d) => {
-            getArtsByID(d.art_id, (d) => {
-                image.src = "data:image/jpeg; base64," + d.data;
-            })
-        });
+        setInterval(() => {
+            getMostNRecentRecord(recentN, (d) => {
+                if (d.art_id != old_art_id) {
+                    old_art_id = d.art_id;
+                    getArtsByID(d.art_id, (d) => {
+                        image.src = "data:image/jpeg; base64," + d.data;
+                    });
+                }
+            });            
+        }, 2000);
 
 
- 
 
     });
     

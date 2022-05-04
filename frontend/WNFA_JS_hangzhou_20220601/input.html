@@ -14,11 +14,28 @@
             src: url(./static/font/classic_console_neue.ttf) format("truetype");
         }
 
-        html {
-            background-color: black;
-            font-family: "Classic Console Neue";
+        @font-face {
+            font-family: "Sim Sun";
+            font-size: normal;
+            font-weight: 400;
+            src: url(./static/font/sim_sun.ttf) format("truetype");
         }
 
+        html {
+            background-color: black;
+            font-family: "Classic Console Neue", "HYBaoSongJ";
+        }
+
+        #transition-gif {
+            position: fixed;
+            height: 60vh;
+            width: 60vw;
+            top: 10vh;
+            left: 20vw;
+            filter: grayscale(100%) sepia(100%) hue-rotate(90deg);
+            display: none;
+            z-index: 1000;
+        }
 
         #canvas {
             display: none;
@@ -42,9 +59,13 @@
 
         #terminal-layer > p {
             font-size: 2.5vh;
-            line-height: 3vh;
+            line-height: 2.5vh;
             margin: 0;
             margin-top: 0.25vh;
+        }
+
+        #terminal-layer > p.cn {
+            font-size: 2vh;
         }
 
         #logo {
@@ -212,10 +233,12 @@
             let printTextListInterval = setInterval(() => {
                 if (textListIndex >= textList.length) {
                     clearInterval(printTextListInterval);
-                    terminal_layer.insertBefore(figureEl, flashCursor);
-                    flashCursor.scrollIntoView(true);
+                    // terminal_layer.insertBefore(figureEl, flashCursor);
+                    // flashCursor.scrollIntoView(true);
                 } else {
-                    const el = createHTMLElement('p', textList[textListIndex++]);
+                    let text_obj = textList[textListIndex++];
+                    let el = (typeof text_obj == "string") ? createHTMLElement("p", text_obj) : createHTMLElement("p", text_obj[0], null, text_obj[1]);
+                    
                     terminal_layer.insertBefore(el, flashCursor);
                     flashCursor.scrollIntoView(true);
                 }
@@ -239,22 +262,7 @@
             const video = document.querySelector("#video");
             const canvas = document.querySelector("#canvas");
             const terminal_layer = document.querySelector("#terminal-layer");
-            // const textList = [
-            //     "closing camera stream...","",
-            //     "core systems online...",
-            //     "thanks for using WNFA...","","",
-            //     "start text processing sequence...","","","",
-                
-            //     "<br>",
-            //     "荷叶滴落泪水<br>来不及 浸透书页","","",
-            //     "一百年 一千年<br>点燃一片通电的网","","",
-            //     "<br>",
-            //     "回想 回想",
-            //     "那心的铁片<br>也要发出轰响","","","",
-            //     "<br>",
-
-            //     "please wait...",
-            // ]
+            const transition_gif = document.querySelector("#transition-gif");
 
             const textList = [
                 "closing camera stream...","","",
@@ -263,18 +271,26 @@
                 "start text processing sequence...","","","",
                 
                 "<br>",
-                "荷叶滴落泪水<br>来不及 浸透书页<br>一百年 一千年<br>点燃一片通电的网","","",
+                ["荷叶滴落泪水<br>来不及 浸透书页<br>一百年 一千年<br>点燃一片通电的网", "cn"],"","",
                 "<br>",
-                "回想 回想<br>那心的铁片<br>也要发出轰响","","",
+                ["回想 回想<br>那心的铁片<br>也要发出轰响", "cn"],"","",
                 "<br>","","","",
 
                 "please wait...",
             ]
 
-            const terminalLayerClear = () => {};
+            const screenTransitionFlash = (callback) => {
+                transition_gif.style.display = "block";
+                setTimeout(() => {
+                    transition_gif.style.display = "none";
+                    callback();
+                }, 500);
+            }
 
             const enterKeyhandler = () => {
                 enterKeyListener = () => {};                                            // disable enter key for the duration
+                
+                screenTransitionFlash(() => {
                     video.pause();                                                      // pause video
                     terminal_layer.style.display = "block";                             // turn on terminal layer
                     
@@ -287,10 +303,13 @@
                             if (suc) {
                                 // success
                                 // do terminal message
-                                video.play();                               // start video
-                                terminal_layer.style.display = "none";       // remove terminal layer
-                                animationStopFunc();
-                                enterKeyListener = enterKeyhandler;         // reenable enter key
+                                screenTransitionFlash(()=>{
+                                    video.play();                               // start video
+                                    terminal_layer.style.display = "none";       // remove terminal layer
+                                    animationStopFunc();
+                                    enterKeyListener = enterKeyhandler;         // reenable enter key                                    
+                                });
+
                                 
                             } else {
                                 // error
@@ -298,10 +317,13 @@
                                 // countdown
                                 
                                 // return to working state
-                                video.play();                               // start video
-                                terminal_layer.style.display = "none";       // remove terminal layer
-                                animationStopFunc();
-                                enterKeyListener = enterKeyhandler;         // reenable enter key
+                                screenTransitionFlash(()=>{
+                                    video.play();                               // start video
+                                    terminal_layer.style.display = "none";       // remove terminal layer
+                                    animationStopFunc();
+                                    enterKeyListener = enterKeyhandler;         // reenable enter key
+                                });
+ 
                             }
                         }
                         let timeEnd = performance.now();
@@ -316,6 +338,8 @@
                         }
 
                     });
+                });
+
                   
             }
 
@@ -342,6 +366,7 @@
         <img id="monitor-engraving" src="./static/img/monitor_engraving.png">
     </div>
     <div id="second-layer">
+        <img id="transition-gif" src="./static/img/transition_animation.gif">
         <video id="video"></video>
         <canvas id="canvas"></canvas> 
         <div id="terminal-layer"></div>        

@@ -1,5 +1,5 @@
 import joblib 
-pipe = joblib.load(open("models/emotion_classifier_pipe.pkl","rb"))
+# pipe = joblib.load(open("./models/emotion_classifier_pipe.pkl","rb"))
 
 def predict_emo(text):
 	classes = pipe.classes_

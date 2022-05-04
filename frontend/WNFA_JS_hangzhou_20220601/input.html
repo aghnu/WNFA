@@ -26,21 +26,29 @@
 
         #terminal-layer {
             position: fixed;
-            height: 60vh;
-            width: 60vw;
+            height: 51vh;
+            width: 46vw;
             background-color: black;
             top: 10vh;
             left: 20vw;
             color: grey;
-            font-size: 3vh;
             padding: 5vh 7vw 5vh 7vw;
-            line-height: 0;
             filter: grayscale(100%) sepia(100%) hue-rotate(90deg);
+            overflow-x: hidden;
+            overflow-y: scroll;
+            word-wrap: break-word;
             display: none;
         }
 
+        #terminal-layer > p {
+            font-size: 2.5vh;
+            line-height: 3vh;
+            margin: 0;
+            margin-top: 0.25vh;
+        }
+
         #logo {
-            height: 5vh;
+            height: 4vh;
             margin: 0;
             padding: 0;
         }
@@ -70,7 +78,7 @@
 
         #monitor-engraving {
             position: fixed;
-            width: 300px;
+            height: 12vh;
             top: 71vh;
             right: 19vw;
         }
@@ -87,6 +95,23 @@
         const endpointURL = "localhost:8000/";
         const submitAPIURL = "api/submit/ticket";
         const actions = {};
+
+        const date = new Date();
+        const figure1 = "&nbsp0&nbsp &nbsp0&nbsp<br>-|- /|\\<br>/&nbsp\\ /&nbsp\\";
+        const figure2 = "&nbsp0&nbsp &nbsp0&nbsp<br>/|\\ -|-<br>/&nbsp\\ /&nbsp\\";
+        const promptStr = '$: ';
+
+        const figureEl = createHTMLElement('p', figure1);
+        const flashCursor = createHTMLElement('p', promptStr);
+        const dividor1 = createHTMLElement('p', "-------------------");
+        const dividor2 = createHTMLElement('p', "-------------------");
+        const systemStr = createHTMLElement('p', "System: WNFA-OS 0.1.2");
+        const dateStr = createHTMLElement('p', "Date: " + date.getFullYear().toString() + "." + (date.getMonth() + 1).toString() + "." + date.getDate().toString());
+        const WNFA_logo = createHTMLElement('img', "", id="logo");
+        WNFA_logo.src = "./static/img/logo-grey.png";
+
+        let promptFlash = false;
+        let figureFlash = false;
 
         function addKeyPressAction(key, action) {
             actions[key] = action;
@@ -132,6 +157,77 @@
             callback();
         }
 
+        function terminalTypingText() {};
+        
+        function terminalWhileWaiting() {};
+
+        function createHTMLElement(tag, innerHTML, id=null, classname=null) {
+            const el = document.createElement(tag);
+            el.innerHTML = innerHTML;
+            if (id !== null) {
+                el.id = id;
+            }
+            if (classname !== null) {
+                el.classList.add(classname);
+            }
+            return el;
+        }
+        
+        setInterval(() => {
+            if (promptFlash) {
+                flashCursor.innerHTML = promptStr + '_';
+                promptFlash = false;
+            } else {
+                flashCursor.innerHTML = promptStr;
+                promptFlash = true;
+            }
+            
+        }, 500);
+
+        setInterval(() => {
+                if (figureFlash) {
+                    figureEl.innerHTML = figure1;
+                    figureFlash = false;
+                } else {
+                    figureEl.innerHTML = figure2;
+                    figureFlash = true;
+                }
+            }, 300);
+
+        window.addEventListener('resize', () => {
+            flashCursor.scrollIntoView(true);
+        })
+
+        function terminalAnimeWaiting(textList, terminal_layer) {
+            
+            let textListIndex = 0;
+            
+            terminal_layer.appendChild(dividor1);
+            terminal_layer.appendChild(WNFA_logo);
+            terminal_layer.appendChild(systemStr);
+            terminal_layer.appendChild(dateStr);
+            terminal_layer.appendChild(dividor2);
+            terminal_layer.appendChild(flashCursor);
+
+            let printTextListInterval = setInterval(() => {
+                if (textListIndex >= textList.length) {
+                    clearInterval(printTextListInterval);
+                    terminal_layer.insertBefore(figureEl, flashCursor);
+                    flashCursor.scrollIntoView(true);
+                } else {
+                    const el = createHTMLElement('p', textList[textListIndex++]);
+                    terminal_layer.insertBefore(el, flashCursor);
+                    flashCursor.scrollIntoView(true);
+                }
+                
+            }, 500);
+
+            return () => {
+                clearInterval(printTextListInterval);
+                terminal_layer.innerHTML = "";
+            }
+        }
+
         // setup keylistener
         let enterKeyListener = () => {};
         addKeyPressAction(13, () => { enterKeyListener() }); 
@@ -143,6 +239,37 @@
             const video = document.querySelector("#video");
             const canvas = document.querySelector("#canvas");
             const terminal_layer = document.querySelector("#terminal-layer");
+            // const textList = [
+            //     "closing camera stream...","",
+            //     "core systems online...",
+            //     "thanks for using WNFA...","","",
+            //     "start text processing sequence...","","","",
+                
+            //     "<br>",
+            //     "荷叶滴落泪水<br>来不及 浸透书页","","",
+            //     "一百年 一千年<br>点燃一片通电的网","","",
+            //     "<br>",
+            //     "回想 回想",
+            //     "那心的铁片<br>也要发出轰响","","","",
+            //     "<br>",
+
+            //     "please wait...",
+            // ]
+
+            const textList = [
+                "closing camera stream...","","",
+                "core systems online...","",
+                "thanks for using WNFA...",
+                "start text processing sequence...","","","",
+                
+                "<br>",
+                "荷叶滴落泪水<br>来不及 浸透书页<br>一百年 一千年<br>点燃一片通电的网","","",
+                "<br>",
+                "回想 回想<br>那心的铁片<br>也要发出轰响","","",
+                "<br>","","","",
+
+                "please wait...",
+            ]
 
             const terminalLayerClear = () => {};
 
@@ -150,30 +277,46 @@
                 enterKeyListener = () => {};                                            // disable enter key for the duration
                     video.pause();                                                      // pause video
                     terminal_layer.style.display = "block";                             // turn on terminal layer
+                    
+                    let animationStopFunc = terminalAnimeWaiting(textList, terminal_layer);
+                    let timeStart = performance.now();
+                    let animationTimeNeeded = textList.length * 500 + 2000;
 
-                    submitPhotoTicket(takePhotoToBase64(video, canvas), (suc) => {      // take a photo and submit, then waiting for response
-                        if (suc) {
-                            // success
-                            // do terminal message
-                            video.play();                               // start video
-                            terminal_layer.style.display = "none";       // remove terminal layer
-                            terminalLayerClear();                       // clear terminal
-                            enterKeyListener = enterKeyhandler;         // reenable enter key
-                            
-                        } else {
-                            // error
-                            // display terminal message error
-                            // countdown
-                            
-                            // return to working state
-                            video.play();                               // start video
-                            terminal_layer.style.display = "none";       // remove terminal layer
-                            terminalLayerClear();                       // clear terminal
-                            enterKeyListener = enterKeyhandler;         // reenable enter key
+                    submitPhotoTicket(takePhotoToBase64(video, canvas), (suc) => {      // take a photo and submit, then waiting for response       
+                        const stopSequenceFunc = () => {
+                            if (suc) {
+                                // success
+                                // do terminal message
+                                video.play();                               // start video
+                                terminal_layer.style.display = "none";       // remove terminal layer
+                                animationStopFunc();
+                                enterKeyListener = enterKeyhandler;         // reenable enter key
+                                
+                            } else {
+                                // error
+                                // display terminal message error
+                                // countdown
+                                
+                                // return to working state
+                                video.play();                               // start video
+                                terminal_layer.style.display = "none";       // remove terminal layer
+                                animationStopFunc();
+                                enterKeyListener = enterKeyhandler;         // reenable enter key
+                            }
                         }
-                    });
+                        let timeEnd = performance.now();
+                        if ((timeEnd - timeStart) < animationTimeNeeded) {
+                            console.log("1");
+                            setTimeout(() => {
+                                stopSequenceFunc();
+                            }, animationTimeNeeded - (timeEnd - timeStart));
+                        } else {
+                            console.log("2");
+                            stopSequenceFunc();
+                        }
 
-                    // message displaying during waiting
+                    });
+                  
             }
 
             const initLogic = () => {
@@ -201,16 +344,7 @@
     <div id="second-layer">
         <video id="video"></video>
         <canvas id="canvas"></canvas> 
-        <div id="terminal-layer">
-            <p>---------------------</p>
-            <img id="logo" src="./static/img/logo-grey.png">
-            <p>System version: 0.1.2</p>
-            <p>Date: 2022.05.02</p>
-            <p>---------------------</p>
-            <p>loading...</p>
-            <p>closing camera stream...</p>
-            <p>processing emotion...</p>
-        </div>        
+        <div id="terminal-layer"></div>        
     </div>
 
         

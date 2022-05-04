@@ -15,6 +15,7 @@ pillow = "*"
 scikit-image = "*"
 django-cors-headers = "*"
 tencentcloud-sdk-python = "*"
+"backports.zoneinfo" = "*"
 
 [dev-packages]
 

@@ -41,6 +41,12 @@
             display: none;
         }
 
+        #video {
+            margin-left: auto;
+            margin-right: auto;
+            filter: grayscale(100%) sepia(100%) hue-rotate(90deg);
+        }
+
         #terminal-layer {
             position: fixed;
             height: 51vh;
@@ -78,6 +84,7 @@
         #second-layer {
             position: fixed;
             display: flex;
+            height: 100vh;
             width: 100vw;
             top: 0;
             left: 0;
@@ -102,12 +109,6 @@
             height: 12vh;
             top: 71vh;
             right: 19vw;
-        }
-
-        #video {
-            height: 100vh;
-            margin: auto;
-            filter: grayscale(100%) sepia(100%) hue-rotate(90deg);
         }
 
 
@@ -368,7 +369,7 @@
     <div id="second-layer">
         <img id="transition-gif" src="./static/img/transition_animation.gif">
         <video id="video"></video>
-        <canvas id="canvas"></canvas> 
+        <canvas id="canvas" height=1080 width=1920></canvas> 
         <div id="terminal-layer"></div>        
     </div>
 

@@ -1,5 +1,8 @@
 import joblib 
-# pipe = joblib.load(open("./models/emotion_classifier_pipe.pkl","rb"))
+import os
+
+model_path = os.path.abspath(os.path.split(__file__)[0] + "/models/emotion_classifier_pipe.pkl")
+pipe = joblib.load(open(model_path,"rb"))
 
 def predict_emo(text):
 	classes = pipe.classes_

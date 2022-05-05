@@ -11,7 +11,3 @@ def predict_emo(text):
 	for index in range(len(classes)):
 		results_dict[classes[index]] = results[0][index]
 	return results_dict
-
-def test():
-	mockup = "I'm going to list where I'm looking..I, we have the original wipe material..Go to the ancient seven seas to read the different shovel..Limp soup.News man and therefore today.Jiagao City Night Chef T.There is no discount..Yu Caiyang association"
-	predict_emo(mockup)

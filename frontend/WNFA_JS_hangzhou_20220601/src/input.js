@@ -6,6 +6,27 @@ import img_transition from './assets/img/transition_animation.gif';
 import img_WNFA_heart from './assets/img/heart.gif';
 import img_WNFA_logo from './assets/img/logo_grey.png';
 
+
+
+function submitPhotoTicket(endpointURL, submitAPIURL, base64) {
+    return fetch(endpointURL + submitAPIURL, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            'data': base64,
+        })
+    });
+}
+
+function takePhotoToBase64(video, canvas) {
+    canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+    return canvas.toDataURL('image/jpeg').split(';base64,')[1];
+}
+
+
+
 function run() {
     const video = document.querySelector("#video");
     const canvas = document.querySelector("#canvas");
@@ -16,12 +37,13 @@ function run() {
     const submitAPIURL = "api/submit/ticket";
     const date = new Date();
     let enterKeyFunc;
+    let animationProcessing = true;
     let processing = true;
     
 
     const waitingTextList = [
         {type: "text", text: "---------------", lang: 'en', delay: 0},
-        {type: "img", img: img_WNFA_heart, class: 'logo', delay: 0},
+        {type: "img", img: img_WNFA_logo, class: 'logo', delay: 0},
         {type: "text", text: "System: WNFA-OS 0.1.2", lang: 'en', delay: 0},
         {type: "text", text: "Date: " + date.toDateString(), lang: 'en', delay: 0},
         {type: "text", text: "---------------", lang: 'en', delay: 0},
@@ -39,45 +61,73 @@ function run() {
     ]
 
     document.addEventListener('keydown', (e) => {
-        if (!processing && e.key === "Enter") {
+        if (!animationProcessing && !processing && e.key === "Enter") {
             console.log("yes");
             enterKeyFunc();
         }
     });
 
     enterKeyFunc =() => {
+        animationProcessing = true;
         processing = true;
-        video.pause();
-        terminal_layer.classList.add('show');
-        video.classList.add('hide');
+        transition_gif.classList.add('show');
 
-        let listIndex = 0;
-        let printTimeout;
-        const nextPrint = () => {
-            if (listIndex >= waitingTextList.length) {
-                    processing = false;
-            } else {
-                printTimeout = setTimeout(() => {       
-                    const obj = waitingTextList[listIndex];
-                    switch(obj.type) {
-                        case 'text':
-                            terminal_layer.appendChild(createHTMLElement('p', obj.text, {'class': obj.lang}));
-                            break;
-                        case 'img':
-                            terminal_layer.appendChild(createHTMLElement('p', '', {'src': obj.img, 'class': obj.class}));
-                            break;
-                        case 'break':
-                            terminal_layer.appendChild(createHTMLElement('p', '<br>'));
-                            break;
-                    }
-                    listIndex++;
-                    nextPrint();       
-                }, waitingTextList[listIndex].delay);
+        setTimeout(()=>{
+            const pointer = createHTMLElement('p', '$: _');
+            terminal_layer.appendChild(pointer);
+            transition_gif.classList.remove('show');
+            
+            video.pause();
+            terminal_layer.classList.add('show');
+            video.classList.add('hide');
+    
+            let listIndex = 0;
+            let printTimeout;
+            const nextPrint = () => {
+                if (listIndex >= waitingTextList.length) {
+                        processing = false;
+                } else {
+                    printTimeout = setTimeout(() => {       
+                        const obj = waitingTextList[listIndex];
+                        switch(obj.type) {
+                            case 'text':
+                                terminal_layer.insertBefore(createHTMLElement('p', obj.text, {'class': obj.lang}), pointer);
+                                pointer.scrollIntoView(true);
+                                break;
+                            case 'img':
+                                terminal_layer.insertBefore(createHTMLElement('img', '', {'src': obj.img, 'class': obj.class}), pointer);
+                                pointer.scrollIntoView(true);
+                                break;
+                            case 'break':
+                                terminal_layer.insertBefore(createHTMLElement('p', '<br>'), pointer);
+                                pointer.scrollIntoView(true);
+                                break;
+                        }
+                        listIndex++;
+                        nextPrint();       
+                    }, waitingTextList[listIndex].delay);
+                }
             }
+            nextPrint();
 
-        }
+            // take photo and submite
+            submitPhotoTicket(endpointURL,submitAPIURL, takePhotoToBase64(video, canvas))
+            .then(() => {
+                processing = false;
+                video.play();
+                terminal_layer.classList.remove('show');
+            })
+            .catch((e) => {
+                console.log(e);
+                processing = false;
 
-        nextPrint();
+            })
+
+
+        },500);
+
+
+        
 
 
         
@@ -101,8 +151,8 @@ function main() {
 
     const top_layer_monitor_frame = createHTMLElement('img', '', {'id': 'monitor-frame', 'src': img_monitor_frame});
     const top_layer_monitor_engraving = createHTMLElement('img', '', {'id': 'monitor-engraving', 'src': img_monitor_engraving});
-    const second_layer_transition = createHTMLElement('img', '', {'id': 'transition-gif', 'src': img_transition});
     
+    const second_layer_transition = createHTMLElement('img', '', {'id': 'transition-gif', 'src': img_transition});
     const second_layer_WNFA_heart = createHTMLElement('img', '', {'id': 'WNFA-heart', 'src': img_WNFA_heart});
     const second_layer_terminal= createHTMLElement('div', '', {'id': 'terminal-layer'});
     const second_layer_vide = createHTMLElement('video', '', {'id': 'video'});
@@ -110,8 +160,8 @@ function main() {
 
     top_layer.appendChild(top_layer_monitor_frame);
     top_layer.appendChild(top_layer_monitor_engraving);
-    top_layer.appendChild(second_layer_transition);
 
+    second_layer.appendChild(second_layer_transition);
     second_layer.appendChild(second_layer_WNFA_heart);
     second_layer.appendChild(second_layer_terminal);
     second_layer.appendChild(second_layer_vide);

@@ -1,5 +1,7 @@
 # WNFA specific
 art_assets/
+dist/
+node_modules/
 
 # Created by https://www.toptal.com/developers/gitignore/api/django
 # Edit at https://www.toptal.com/developers/gitignore?templates=django

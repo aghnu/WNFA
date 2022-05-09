@@ -64,7 +64,7 @@ function run() {
                             terminal_layer.appendChild(createHTMLElement('p', obj.text, {'class': obj.lang}));
                             break;
                         case 'img':
-                            terminal_layer.appendChild(createHTMLElement('p', {'src': obj.img, 'class': obj.class}));
+                            terminal_layer.appendChild(createHTMLElement('p', '', {'src': obj.img, 'class': obj.class}));
                             break;
                         case 'break':
                             terminal_layer.appendChild(createHTMLElement('p', '<br>'));

@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
-
         @font-face {
             font-family: "Classic Console Neue";
             font-size: normal;
@@ -95,6 +94,7 @@
         }
 
         #logo {
+            display: block;
             height: 4vh;
             margin: 0;
             padding: 0;
@@ -134,16 +134,16 @@
 
     </style>
     <script>
-        const endpointURL = "localhost:8000/";
+        const url = new URL(window.location);
+
+        const endpointURL = (url.searchParams.get('endpoint')) ? (url.searchParams.get('endpoint')) : "http://localhost:8000/";
+        
         const submitAPIURL = "api/submit/ticket";
         const actions = {};
 
         const date = new Date();
-        const figure1 = "&nbsp0&nbsp &nbsp0&nbsp<br>-|- /|\\<br>/&nbsp\\ /&nbsp\\";
-        const figure2 = "&nbsp0&nbsp &nbsp0&nbsp<br>/|\\ -|-<br>/&nbsp\\ /&nbsp\\";
         const promptStr = '$: ';
 
-        const figureEl = createHTMLElement('p', figure1);
         const flashCursor = createHTMLElement('p', promptStr);
         const dividor1 = createHTMLElement('p', "-------------------");
         const dividor2 = createHTMLElement('p', "-------------------");
@@ -170,7 +170,7 @@
         }
 
         function submitPhotoTicket(base64, callback = () => {}) {
-            fetch('http://' + endpointURL + submitAPIURL, {
+            fetch(endpointURL + submitAPIURL, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -196,12 +196,9 @@
         async function connectCam (vid, callback = () => {}) {
             let stream = await navigator.mediaDevices.getUserMedia({video: true, audio: false});
             vid.srcObject = stream;
+            video.play();
             callback();
         }
-
-        function terminalTypingText() {};
-        
-        function terminalWhileWaiting() {};
 
         function createHTMLElement(tag, innerHTML, id=null, classname=null) {
             const el = document.createElement(tag);
@@ -225,16 +222,6 @@
             }
             
         }, 500);
-
-        setInterval(() => {
-                if (figureFlash) {
-                    figureEl.innerHTML = figure1;
-                    figureFlash = false;
-                } else {
-                    figureEl.innerHTML = figure2;
-                    figureFlash = true;
-                }
-            }, 300);
 
         window.addEventListener('resize', () => {
             flashCursor.scrollIntoView(true);
@@ -266,7 +253,6 @@
             let printTextListInterval = setInterval(() => {
                 if (textListIndex >= textList.length) {
                     clearInterval(printTextListInterval);
-                    // terminal_layer.insertBefore(figureEl, flashCursor);
                     screenTransitionFlash(()=>{
                         WNFA_heart.style.display = "block";
                         terminal_layer.classList.add("standby");
@@ -390,11 +376,6 @@
             } else {
                 connectCam(video, initLogic);
             }
-
-            // // testing
-            // terminal_layer.style.display = "block";                             // turn on terminal layer
-            // terminalAnimeWaiting(["Please wait"], terminal_layer);
-            // // end of testing
         });
 
     </script>

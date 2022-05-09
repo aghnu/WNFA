@@ -18,8 +18,9 @@
     }
 </style>
 <script>
-
-    const endpointURL = "localhost:8000/";
+    const url = new URL(window.location);
+    const endpointURL = (url.searchParams.get('endpoint')) ? (url.searchParams.get('endpoint')) : "http://localhost:8000/";
+    
     const artsAPIURL = "api/arts";
     const recordsAPIURL = "api/records";
     

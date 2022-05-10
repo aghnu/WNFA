@@ -25,7 +25,7 @@
     const recordsAPIURL = "api/records";
     
     function getMostNRecentRecord(recentN, callback) {
-        fetch("http://" + endpointURL + recordsAPIURL + "?select=" + recentN)
+        fetch(endpointURL + recordsAPIURL + "?select=" + recentN)
             .then((r) => {
                 r.json().then((d) => {
                     callback(d);
@@ -37,7 +37,7 @@
     }
 
     function getArtsByID(id, callback) {
-        fetch("http://" + endpointURL + artsAPIURL + "/" + id)
+        fetch(endpointURL + artsAPIURL + "/" + id)
             .then((r) => {
                 r.json().then((d) => {
                     callback(d);

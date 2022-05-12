@@ -271,6 +271,40 @@ fake_binary_number = '''
 0000000001010110101011010111111110101010000101101010110101111111101010100
 '''
 
+
+def apply_color_filter(img, color):
+    img = img.copy()
+    
+    
+
+    filter = generatingSingleColorImg(color)
+    filter = scaleImageToRes(filter, img.shape[0], img.shape[1])
+
+    grey = cv2.cvtColor(img, cv2.COLOR_RGBA2GRAY)
+    white = grey[:,:] == 255
+
+
+    grey = cv2.cvtColor(grey, cv2.COLOR_GRAY2RGBA)
+
+    img = cv2.addWeighted(grey, 0.8, filter, 0.2, 0)
+    img[:,:][white] = [255,255,255,255]
+
+    
+
+    return img
+
+
+def imginvert(img):
+    img = img.copy()
+    img = cv2.cvtColor(img, cv2.COLOR_RGBA2RGB)
+    img = np.invert(img)
+    img = cv2.cvtColor(img, cv2.COLOR_RGB2RGBA)
+
+    return img
+
+
+
+
 def demo_anger_1():
 
     out = np.zeros((OUT_RES_HEIGHT, OUT_RES_WIDTH, 4), dtype=np.ubyte)
@@ -360,50 +394,68 @@ def demo_anger_1():
     out = pasteImageToImageTransparent(out, res, gridToPos(*res_startPos))
 
     out = removeAlpha(out)
+
+    # 200 190 160
+
+    # 30,85,170
+
+
+    out = apply_color_filter(out, (80,60,120,255))
+    out = imginvert(out)
     io.imsave("test.png", out)
 
-def demo_anger_2():
+def demo_sad():
 
     out = np.zeros((OUT_RES_HEIGHT, OUT_RES_WIDTH, 4), dtype=np.ubyte)
     out[:,:] = [255,255,255,255]
-    grid = io.imread('art_assets/Grids/anger/grid.png')
+    grid = io.imread('art_assets/Grids/sadness/grid.png')
     grid = scaleImageToRes(grid, OUT_RES_HEIGHT, OUT_RES_WIDTH)
 
     # a: 
-    bg = loadImageFromIO('art_assets/1/1/anger/anger-bg1.jpg')
+    bg = loadImageFromIO('art_assets/1/1/sadness/sadness-bg5.jpg')
     bg = scaleImageToRes(bg, OUT_RES_HEIGHT, OUT_RES_WIDTH)
 
     out[grid[:,:,0] == 255] = bg[grid[:,:,0] == 255]
 
     # b:
-    # 2-2
-    res_startPos = (0,0)
-    res_size = (2, 8)
+    # 2-1
+    res_startPos = (6,5)
+    res_size = (4, 7)
 
-    res = loadImageFromIO('art_assets/2/2/17.png')
+    res = loadImageFromIO('art_assets/2/1/02.jpg')
     res = cropImage(res, (math.floor(res.shape[1]/res_size[1] * res_size[0]), res.shape[1]), (res.shape[0]//2, 0))
 
     out = maskToImage(out, (grid, 1, 200), res, gridToPos(res_startPos[0], res_startPos[1]), gridToSize(res_size[0], res_size[1]))
+    
+    # 2-1
+    res_startPos = (4,0)
+    res_size = (2, 2)
+
+    res = loadImageFromIO('art_assets/2/2/08.jpg')
+    res = cropImage(res, (math.floor(res.shape[1]/res_size[1] * res_size[0]), res.shape[1]), (res.shape[0]//2, 0))
+
+    out = maskToImage(out, (grid, 1, 200), res, gridToPos(res_startPos[0], res_startPos[1]), gridToSize(res_size[0], res_size[1]))
+    
     # 2-3
-    res_startPos = (2,8)
+    res_startPos = (0,2)
     res_size = (4, 4)
 
-    res = loadImageFromIO('art_assets/2/3/风雨.png')
+    res = loadImageFromIO('art_assets/2/3/夜.png')
     out = maskToImage(out, (grid, 1, 150), res, gridToPos(res_startPos[0], res_startPos[1]), gridToSize(res_size[0], res_size[1]))
 
     # 2-4
-    res_startPos = (6,10)
-    res_size = (2, 2)
+    res_startPos = (8,0)
+    res_size = (3, 5)
 
-    res = loadImageFromIO('art_assets/2/4/01.png')
+    res = loadImageFromIO('art_assets/2/4/35.png')
     out = maskToImage(out, (grid, 1, 100), res, gridToPos(res_startPos[0], res_startPos[1]), gridToSize(res_size[0], res_size[1]))
 
     # text
     # 4-3
-    res_startPos = (0,0)
-    res_size = (4, 4)
+    res_startPos = (1,0)
+    res_size = (3, 3)
 
-    res = charToImage("落", 'art_assets/4/3/HYBaoSongJ.ttf', gridToSize(*res_size)[1], "#505050")
+    res = charToImage("秋", 'art_assets/4/3/HYBaoSongJ.ttf', gridToSize(*res_size)[1], "#505050")
     res = scaleImageToRes(res, *gridToSize(*res_size))
 
     out_selected = out.copy()
@@ -415,8 +467,8 @@ def demo_anger_2():
     out = pasteImageToImageTransparent(out, out_selected, gridToPos(*res_startPos))
 
     # 4-2
-    res_startPos = (4,0)
-    res_size = (4, 8)
+    res_startPos = (6,7)
+    res_size = (4, 5)
 
     res = textToImage(fake_code, 'art_assets/4/2/RadioNewsman.ttf', gridToSize(*res_size), 100, "#505050")
     res = scaleImageToRes(res, *gridToSize(*res_size))
@@ -428,8 +480,8 @@ def demo_anger_2():
     out = pasteImageToImageTransparent(out, out_selected, gridToPos(*res_startPos))
 
     # 4-1
-    res_startPos = (8,10)
-    res_size = (4, 2)
+    res_startPos = (10,3)
+    res_size = (2, 3)
 
     res = textToImage(fake_binary_number, 'art_assets/4/2/RadioNewsman.ttf', gridToSize(*res_size), 50, "#505050")
     res = scaleImageToRes(res, *gridToSize(*res_size))
@@ -443,18 +495,149 @@ def demo_anger_2():
     # decoration
     # 5
     res_startPos = (0,4)
-    res_size = (8, 8)
+    res_size = (4, 4)
 
-    res = loadImageFromIO('art_assets/5/1/01.png')
+    res = loadImageFromIO('art_assets/5/1/12.png')
     res = scaleImageToRes(res, *gridToSize(*res_size))
 
     out = pasteImageToImageTransparent(out, res, gridToPos(*res_startPos))
 
     out = removeAlpha(out)
+
+    # 200 190 160
+
+    # 30,85,170
+
+
+    out = apply_color_filter(out, (200,190,160,255))
+    # out = imginvert(out)
     io.imsave("test.png", out)
 
+def demo_sad():
 
-demo_anger_1()
+    out = np.zeros((OUT_RES_HEIGHT, OUT_RES_WIDTH, 4), dtype=np.ubyte)
+    out[:,:] = [255,255,255,255]
+    grid = io.imread('art_assets/Grids/joy/grid.png')
+    grid = scaleImageToRes(grid, OUT_RES_HEIGHT, OUT_RES_WIDTH)
+
+
+    # fake grid
+    g = loadImageFromIO('art_assets/Grids/grid2.png')
+    g = scaleImageToRes(g, OUT_RES_HEIGHT, OUT_RES_WIDTH)
+
+    out = pasteImageToImageTransparent(out, g, (0,0))
+
+
+    # a: 
+    bg = loadImageFromIO('art_assets/1/1/joy/joy-bg6.jpg')
+    bg = scaleImageToRes(bg, OUT_RES_HEIGHT, OUT_RES_WIDTH)
+
+    out[grid[:,:,0] == 255] = bg[grid[:,:,0] == 255]
+
+    # b:
+    # 2-1
+    res_startPos = (4,10)
+    res_size = (2, 2)
+
+    res = loadImageFromIO('art_assets/2/1/08.jpg')
+    res = cropImage(res, (math.floor(res.shape[1]/res_size[1] * res_size[0]), res.shape[1]), (res.shape[0]//2, 0))
+
+    out = maskToImage(out, (grid, 1, 200), res, gridToPos(res_startPos[0], res_startPos[1]), gridToSize(res_size[0], res_size[1]))
+    
+    # 2-1
+    res_startPos = (10,8)
+    res_size = (2, 2)
+
+    res = loadImageFromIO('art_assets/2/2/07.jpg')
+    res = cropImage(res, (math.floor(res.shape[1]/res_size[1] * res_size[0]), res.shape[1]), (res.shape[0]//2, 0))
+
+    out = maskToImage(out, (grid, 1, 200), res, gridToPos(res_startPos[0], res_startPos[1]), gridToSize(res_size[0], res_size[1]))
+    
+    # 2-4
+    res_startPos = (0,8)
+    res_size = (4, 4)
+
+    res = loadImageFromIO('art_assets/2/3/晴.png')
+    out = maskToImage(out, (grid, 1, 150), res, gridToPos(res_startPos[0], res_startPos[1]), gridToSize(res_size[0], res_size[1]))
+
+    # 2-4
+    res_startPos = (6,8)
+    res_size = (2, 2)
+
+    res = loadImageFromIO('art_assets/2/3/风雨.png')
+    out = maskToImage(out, (grid, 1, 150), res, gridToPos(res_startPos[0], res_startPos[1]), gridToSize(res_size[0], res_size[1]))
+
+    # 2-3
+    res_startPos = (8,10)
+    res_size = (2, 2)
+
+    res = loadImageFromIO('art_assets/2/3/声.png')
+    out = maskToImage(out, (grid, 1, 150), res, gridToPos(res_startPos[0], res_startPos[1]), gridToSize(res_size[0], res_size[1]))
+
+
+    # text
+    # 4-3
+    res_startPos = (2,7)
+    res_size = (6, 3)
+
+    res = charToImage("仕", 'art_assets/4/3/HYBaoSongJ.ttf', gridToSize(*res_size)[1], "#505050")
+    res = scaleImageToRes(res, *gridToSize(*res_size))
+
+    out_selected = out.copy()
+    out_selected = cropImage(out_selected, gridToSize(*res_size), gridToPos(*res_startPos))
+
+    out_selected = maskTextToImageInvert(out_selected, res)
+
+    # out = maskTextToImageInvert(out, (grid, 2, 255), np.invert(res), gridToPos(res_startPos[0], res_startPos[1]), gridToSize(res_size[0], res_size[1]))
+    out = pasteImageToImageTransparent(out, out_selected, gridToPos(*res_startPos))
+
+    # 4-2
+    res_startPos = (3,4)
+    res_size = (7, 2)
+
+    res = textToImage(fake_code, 'art_assets/4/2/RadioNewsman.ttf', gridToSize(*res_size), 100, "#505050")
+    res = scaleImageToRes(res, *gridToSize(*res_size))
+
+    out_selected = out.copy()
+    out_selected = cropImage(out_selected, gridToSize(*res_size), gridToPos(*res_startPos))
+
+    out_selected = maskTextToImageInvert(out_selected, res)
+    out = pasteImageToImageTransparent(out, out_selected, gridToPos(*res_startPos))
+
+    # 4-1
+    res_startPos = (6,10)
+    res_size = (6, 1)
+
+    res = textToImage(fake_binary_number, 'art_assets/4/2/RadioNewsman.ttf', gridToSize(*res_size), 80, "#505050")
+    res = scaleImageToRes(res, *gridToSize(*res_size))
+
+    out_selected = out.copy()
+    out_selected = cropImage(out_selected, gridToSize(*res_size), gridToPos(*res_startPos))
+
+    out_selected = maskTextToImageInvert(out_selected, res)
+    out = pasteImageToImageTransparent(out, out_selected, gridToPos(*res_startPos))
+
+    # decoration
+    # 5
+    res_startPos = (0, 6)
+    res_size = (9, 5)
+
+    res = loadImageFromIO('art_assets/5/1/12.png')
+    res = scaleImageToRes(res, *gridToSize(*res_size))
+
+    out = pasteImageToImageTransparent(out, res, gridToPos(*res_startPos))
+
+    out = removeAlpha(out)
+
+    # 200 190 160
+
+    # 30,85,170
+
+    out = apply_color_filter(out, (200,190,160,255))
+    # out = imginvert(out)
+    io.imsave("test.png", out)
+
+demo_sad()
 
 
 

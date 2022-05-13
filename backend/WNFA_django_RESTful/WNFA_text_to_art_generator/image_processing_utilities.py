@@ -32,7 +32,7 @@ def make_grey_scale(img):
 resize an image to given size - (height, width)
 '''
 def resize_image_to_size(img, size_hw):
-    img = img.copy
+    img = img.copy()
     img_pil = Image.fromarray(img).resize([size_hw[1], size_hw[0]], resample=Image.Resampling.NEAREST)
     img = np.array(img_pil)
     return img
@@ -165,6 +165,18 @@ def filter_color(img, filter_value_RGBA):
     img[:,:][white_mask] = [255,255,255,255]
 
     return img
+
+def resize_image_width(img, width):
+    ratio = img.shape[0]/img.shape[1]
+    height = math.floor(ratio * width)
+
+    return resize_image_to_size((height, width))
+
+def resize_image_height(img, height):
+    ratio = img.shape[1]/img.shape[0]
+    width = math.floor(ratio * height)
+
+    return resize_image_to_size((height, width))
 
 
 

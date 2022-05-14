@@ -13,7 +13,6 @@ def predict_emo(text):
 	return results_dict
 
 testing = '''
-        Silent spring is to cherish the fine flow of water, the shade of trees according to the water is soft and sunny.
-        The little tender lotus had just revealed the tightly wrapped tip of the leaf, and the lovely dragonfly stood on it.
+If you don't make up your mind, you can ask the spring breeze. The spring breeze is silent, that is, according to the heart.
 '''
 

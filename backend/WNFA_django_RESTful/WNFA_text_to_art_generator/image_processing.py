@@ -257,7 +257,7 @@ class GridArt:
 
             # get res
             res_block = iu.get_single_color_img((0,0,0,255))
-            res_block = iu.resize_image_to_size(res_block, size)
+            res_block = iu.resize_image_to_size(res_block, grid_to_size(*size))
 
             # apply mask to res if relevant
             if (job.get('mask', None) != None):
@@ -274,11 +274,11 @@ class GridArt:
 
                     # apply mask to res
                     res_m = iu.get_single_color_img((255,255,255,0))
-                    res_m.resize_image_to_size(res_m, m_s)
-                    res_block = iu.paste_image(res_block, res_m, m_p)
+                    res_m.resize_image_to_size(res_m, grid_to_size(*m_s))
+                    res_block = iu.paste_image(res_block, res_m, grid_to_pos(*m_p))
             
-            # past res
-            self.out = iu.paste_image(self.out, res_block, position)
+            # paste res
+            self.out = iu.paste_image(self.out, res_block, grid_to_pos(*position))
 
     def apply_layer_grid(self, grid):
         for job in grid[0]:
@@ -289,10 +289,10 @@ class GridArt:
             selected_file = self.random_generator.select_list(file_list)
 
             res_grid = iu.load_image(path + selected_file)
-            res_grid = iu.resize_image_to_size(res_grid, job['size'])
+            res_grid = iu.resize_image_to_size(res_grid, grid_to_size(*job['size']))
             
             # past
-            self.out = iu.paste_image(self.out, res_grid, job['position'])
+            self.out = iu.paste_image(self.out, res_grid, grid_to_pos(*job['position']))
 
     def apply_layer_background(self, grid):
         grid_transformation_steps = self.random_generator.gen_random_rotation_and_flip()
@@ -306,7 +306,7 @@ class GridArt:
             selected_file = self.random_generator.select_list(file_list)
 
             res_block = iu.load_image(path + selected_file)
-            res_block = self.stretch_crop_res(res_block, size)
+            res_block = self.stretch_crop_res(res_block, grid_to_size(*size))
 
             # apply mask to res if relevant
             if (job.get('mask', None) != None):
@@ -323,11 +323,11 @@ class GridArt:
 
                     # apply mask to res
                     res_m = iu.get_single_color_img((255,255,255,0))
-                    res_m.resize_image_to_size(res_m, m_s)
-                    res_block = iu.paste_image(res_block, res_m, m_p)
+                    res_m.resize_image_to_size(res_m, grid_to_size(*m_s))
+                    res_block = iu.paste_image(res_block, res_m, grid_to_pos(*m_p))
             
-            # past res
-            self.out = iu.paste_image(self.out, res_block, position)
+            # paste res
+            self.out = iu.paste_image(self.out, res_block, grid_to_pos(*position))
 
     def apply_layer_picture(self, grid):
         grid_transformation_steps = self.random_generator.gen_random_rotation_and_flip()
@@ -341,7 +341,7 @@ class GridArt:
             selected_file = self.random_generator.select_list(file_list)
 
             res_block = iu.load_image(path + selected_file)
-            res_block = self.stretch_crop_res(res_block, size)
+            res_block = self.stretch_crop_res(res_block, grid_to_size(*size))
 
             # apply mask to res if relevant
             if (job.get('mask', None) != None):
@@ -358,11 +358,11 @@ class GridArt:
 
                     # apply mask to res
                     res_m = iu.get_single_color_img((255,255,255,0))
-                    res_m.resize_image_to_size(res_m, m_s)
-                    res_block = iu.paste_image(res_block, res_m, m_p)
+                    res_m.resize_image_to_size(res_m, grid_to_size(*m_s))
+                    res_block = iu.paste_image(res_block, res_m, grid_to_pos(*m_p))
             
-            # past res
-            self.out = iu.paste_image(self.out, res_block, position)
+            # paste res
+            self.out = iu.paste_image(self.out, res_block, grid_to_pos(*position))
 
     def apply_layer_text(self, grid):
         grid_transformation_steps = self.random_generator.gen_random_rotation_and_flip()
@@ -379,16 +379,16 @@ class GridArt:
             text_type = job['type'] 
             if text_type == 'char':
                 text_str = [c for c in list(self.record['text_cn']) if is_chinese_char(c)]
-                res_block = iu.get_char_image(text_str, path + selected_file, size[1], "black")
-                res_block = iu.resize_image_to_size(res_block, size)
+                res_block = iu.get_char_image(text_str, path + selected_file, grid_to_size(*size[1]), "black")
+                res_block = iu.resize_image_to_size(res_block, grid_to_size(*size))
             elif text_type == 'text':
                 text_str = self.record['base64']
-                res_block = iu.get_text_image(text_str, size, path + selected_file, self.random_generator.gen_range(50, 150), "black")
-                res_block = iu.resize_image_to_size(res_block, size)
+                res_block = iu.get_text_image(text_str, grid_to_size(*size), path + selected_file, self.random_generator.gen_range(50, 150), "black")
+                res_block = iu.resize_image_to_size(res_block, grid_to_size(*size))
             elif text_type == 'binary':
                 text_str = self.get_binary_code_text()
-                res_block = iu.get_text_image(text_str, size, path + selected_file, self.random_generator.gen_range(25, 150), "black")
-                res_block = iu.resize_image_to_size(res_block, size)
+                res_block = iu.get_text_image(text_str, grid_to_size(*size), path + selected_file, self.random_generator.gen_range(25, 150), "black")
+                res_block = iu.resize_image_to_size(res_block, grid_to_size(*size))
 
             # apply mask to res if relevant
             if (job.get('mask', None) != None):
@@ -405,14 +405,14 @@ class GridArt:
 
                     # apply mask to res
                     res_m = iu.get_single_color_img((255,255,255,0))
-                    res_m.resize_image_to_size(res_m, m_s)
-                    res_block = iu.paste_image(res_block, res_m, m_p)
+                    res_m.resize_image_to_size(res_m, grid_to_size(*m_s))
+                    res_block = iu.paste_image(res_block, res_m, grid_to_pos(*m_p))
             
-            # past res
-            out_selected = iu.crop_image(self.out, size, position)
+            # paste res
+            out_selected = iu.crop_image(self.out, grid_to_size(*size), grid_to_pos(*position))
             res_block = iu.add_mask_to_image_invert(out_selected, res_block)
 
-            self.out = iu.paste_image(self.out, res_block, position)
+            self.out = iu.paste_image(self.out, res_block, grid_to_pos(*position))
 
     def apply_layer_decoration(self, grid):
         grid_transformation_steps = self.random_generator.gen_random_rotation_and_flip()
@@ -426,7 +426,7 @@ class GridArt:
             selected_file = self.random_generator.select_list(file_list)
 
             res_block = iu.load_image(path + selected_file)
-            res_block = self.stretch_crop_res(res_block, size)
+            res_block = self.stretch_crop_res(res_block, grid_to_size(*size))
 
             # apply mask to res if relevant
             if (job.get('mask', None) != None):
@@ -443,11 +443,50 @@ class GridArt:
 
                     # apply mask to res
                     res_m = iu.get_single_color_img((255,255,255,0))
-                    res_m.resize_image_to_size(res_m, m_s)
-                    res_block = iu.paste_image(res_block, res_m, m_p)
+                    res_m.resize_image_to_size(res_m, grid_to_size(*m_s))
+                    res_block = iu.paste_image(res_block, res_m, grid_to_pos(*m_p))
             
-            # past res
-            self.out = iu.paste_image(self.out, res_block, position)
+            # paste res
+            self.out = iu.paste_image(self.out, res_block, grid_to_pos(*position))
+
+    def apply_layer_geometry(self, grid):
+        grid_transformation_steps = self.random_generator.gen_random_rotation_and_flip()
+        for job in grid[0]:
+            # get transformed position
+            position, size = self.get_random_grid_transformation(grid_transformation_steps, (job['position'], job['size']))
+
+            # get res
+            path = job['path']
+            file_list = self.get_list_of_valid_files(path)
+            selected_file = self.random_generator.select_list(file_list)
+
+            res_block = iu.load_image(path + selected_file)
+            res_block = self.stretch_crop_res(res_block, grid_to_size(*size))
+
+            # apply mask to res if relevant
+            if (job.get('mask', None) != None):
+                # apply mask to res
+                mask = job['mask']
+
+                for m in mask:
+                    # first get the position of the mask in canvas, apply transformation to it
+                    # then get the position of the mask in res
+                    m_p = [m['position'][0] + job['position'][0], m['position'][1] + job['position'][1]]
+                    m_s = m['size']
+                    m_p, m_s = self.get_random_grid_transformation(grid_transformation_steps, (m_p, m_s))
+                    m_p = [m_p[0] - position[0], m_p[1] - position[1]]
+
+                    # apply mask to res
+                    res_m = iu.get_single_color_img((255,255,255,0))
+                    res_m.resize_image_to_size(res_m, grid_to_size(*m_s))
+                    res_block = iu.paste_image(res_block, res_m, grid_to_pos(*m_p))
+            
+            # paste res
+            out_selected = iu.crop_image(self.out, grid_to_size(*size), grid_to_pos(*position))
+            res_block = iu.add_mask_to_image_invert(out_selected, res_block)
+
+            self.out = iu.paste_image(self.out, res_block, grid_to_pos(*position))
+
 
     def gen(self):
         '''
@@ -475,6 +514,7 @@ class GridArt:
                 - f: decoration layer
                     - stretch to fit
                     - apply grid image to fit box
+                - g:
         '''
 
         grids = self.read_grid()

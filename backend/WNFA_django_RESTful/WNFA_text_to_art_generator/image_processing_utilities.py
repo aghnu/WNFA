@@ -155,7 +155,7 @@ def filter_color(img, filter_value_RGBA):
     img = img.copy()
     
     filter = get_single_color_img(filter_value_RGBA)
-    filter = resize_image_to_size(filter, img.shape[0], img.shape[1])
+    filter = resize_image_to_size(filter, (img.shape[0], img.shape[1]))
 
     grey = cv.cvtColor(img, cv.COLOR_RGBA2GRAY)
     white_mask = grey[:,:] == 255
@@ -170,13 +170,13 @@ def resize_image_width(img, width):
     ratio = img.shape[0]/img.shape[1]
     height = math.floor(ratio * width)
 
-    return resize_image_to_size((height, width))
+    return resize_image_to_size(img, (height, width))
 
 def resize_image_height(img, height):
     ratio = img.shape[1]/img.shape[0]
     width = math.floor(ratio * height)
 
-    return resize_image_to_size((height, width))
+    return resize_image_to_size(img, (height, width))
 
 
 

@@ -8,9 +8,6 @@ from .models import Record, Art
 from .serializers import RecordSerializer, ArtSerializer
 
 from WNFA_text_to_art_generator.art_generator import ArtGeneratorFromImage
-from PIL import Image
-import numpy as np
-import io
 import base64
 
 
@@ -20,11 +17,8 @@ class TicketSubmission(APIView):
             try:
                 # generate art 
                 img_base64 = request.data["data"]
-                img_decoded = base64.b64decode(img_base64)
-                img_pil = Image.open(io.BytesIO(img_decoded))
-                img_np = np.array(img_pil)
 
-                generator = ArtGeneratorFromImage(img_np)
+                generator = ArtGeneratorFromImage(img_base64)
                 img_gen_obj = generator.generate()
             except:
                 raise BadRequest("Failed to generate Art")

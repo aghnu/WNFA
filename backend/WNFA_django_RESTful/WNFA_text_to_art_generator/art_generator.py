@@ -1,9 +1,11 @@
-from . import emotion_analysis
-from . import image_translate_tencent
+from WNFA_text_to_art_generator.image_translate_tencent import tencent_img_translate
+from WNFA_text_to_art_generator.image_processing import GridArt, is_chinese_char
+from WNFA_text_to_art_generator.emotion_analysis import predict_emo
 
 import base64
 import io
 from PIL import Image
+import numpy as np
 
 
 class ArtOBJ:
@@ -35,14 +37,31 @@ class ArtGeneratorFromText:
 '''
 class ArtGeneratorFromImage:
 
-    def __init__(self, img_np):
-        self.img_np = img_np
+    def __init__(self, img_base64):
+        img_decoded = base64.b64decode(img_base64)
+        img_pil = Image.open(io.BytesIO(img_decoded))
+        self.img_np = np.array(img_pil)
+        self.img_base64 = str(img_base64)
 
     def generate(self):
-        # mockup data
 
-        img_pil = Image.fromarray(self.img_np)        
+        cn_text, eng_text = tencent_img_translate(self.img_base64)
+        # cn_text, eng_text = ("测试文本", "testing text")
+
+        if len([c for c in list(cn_text) if is_chinese_char(c)]) == 0:
+            raise ValueError
+
+        emotion_data = predict_emo(eng_text)
+        record = {
+            'base64': self.img_base64,
+            'text_cn': cn_text,
+            'text_en': eng_text
+        }
+        art = GridArt(emotion_data, record)
+        out = art.gen()
+        
+        img_pil = Image.fromarray(out)        
         buff = io.BytesIO()
         img_pil.save(buff, format="JPEG")
 
-        return ArtOBJ(buff.getvalue(), "Testing_en", "Testing_cn")
+        return ArtOBJ(buff.getvalue(), eng_text, cn_text)

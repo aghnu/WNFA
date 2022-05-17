@@ -10,8 +10,8 @@ import os
 get the absolute path for a file
 '''
 def get_path(relative_path):
-    path = os.path.abspath(os.path.split(__file__)[0] + relative_path)
-    return relative_path
+    path = os.path.abspath(os.path.split(__file__)[0] + "/" + relative_path)
+    return path
 
 '''
 load an image from path
@@ -109,6 +109,8 @@ def get_char_image(char, font_relative_path, font_size, color):
 print text to an newly generated transparent image
 '''
 def get_text_image(text, size_hw, font_relative_path, font_size, color):
+    text = str(text)
+    text = text[0:2000]
     img = get_single_color_img((255,255,255,0))
     img = resize_image_to_size(img, (size_hw[0], size_hw[1]))
     img_pil = Image.fromarray(img)
@@ -178,5 +180,8 @@ def resize_image_height(img, height):
 
     return resize_image_to_size(img, (height, width))
 
+def make_RGBA_to_RGB(img):
+    img = img.copy()
+    return cv.cvtColor(img, cv.COLOR_RGBA2RGB)
 
 

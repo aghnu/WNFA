@@ -10,107 +10,92 @@ from tencentcloud.ocr.v20181119 import models as ocr_models
 
 
 def tencent_text_translate(text_cn):
-    try:
-        cred = credential.EnvironmentVariableCredential().get_credential()
-        httpProfile = HttpProfile()
-        httpProfile.endpoint = "tmt.tencentcloudapi.com"
 
-        clientProfile = ClientProfile()
-        clientProfile.httpProfile = httpProfile
-        client = tmt_client.TmtClient(cred, "ap-shanghai", clientProfile)
+    cred = credential.EnvironmentVariableCredential().get_credential()
+    httpProfile = HttpProfile()
+    httpProfile.endpoint = "tmt.tencentcloudapi.com"
 
-        req = tmt_models.TextTranslateRequest()
-        params = {
-            "SourceText": text_cn,
-            "Source": "auto",
-            "Target": "en",
-            "ProjectId": 1262395
-        }
-        req.from_json_string(json.dumps(params))
+    clientProfile = ClientProfile()
+    clientProfile.httpProfile = httpProfile
+    client = tmt_client.TmtClient(cred, "ap-shanghai", clientProfile)
 
-        resp = client.TextTranslate(req)
+    req = tmt_models.TextTranslateRequest()
+    params = {
+        "SourceText": text_cn,
+        "Source": "auto",
+        "Target": "en",
+        "ProjectId": 1262395
+    }
+    req.from_json_string(json.dumps(params))
 
-        # response
+    resp = client.TextTranslate(req)
 
-        resp_dict = json.loads(resp.to_json_string())
+    # response
 
-        text_en = resp_dict["TargetText"]
+    resp_dict = json.loads(resp.to_json_string())
 
-        return text_en
+    text_en = resp_dict["TargetText"]
 
-    except TencentCloudSDKException as err:
-        print(err)
-
-    return None
+    return text_en
 
 def tencent_img_translate(img_base64):
-    try:
-        cred = credential.EnvironmentVariableCredential().get_credential()
-        httpProfile = HttpProfile()
-        httpProfile.endpoint = "tmt.tencentcloudapi.com"
 
-        clientProfile = ClientProfile()
-        clientProfile.httpProfile = httpProfile
-        client = tmt_client.TmtClient(cred, "ap-shanghai", clientProfile)
+    cred = credential.EnvironmentVariableCredential().get_credential()
+    httpProfile = HttpProfile()
+    httpProfile.endpoint = "tmt.tencentcloudapi.com"
 
-        req = tmt_models.ImageTranslateRequest()
-        params = {
-            "SessionUuid": "default",
-            "Scene": "doc",
-            "Data": img_base64,
-            "Source": "zh",
-            "Target": "en",
-            "ProjectId": 1262395
-        }
-        req.from_json_string(json.dumps(params))
+    clientProfile = ClientProfile()
+    clientProfile.httpProfile = httpProfile
+    client = tmt_client.TmtClient(cred, "ap-shanghai", clientProfile)
 
-        resp = client.ImageTranslate(req)
+    req = tmt_models.ImageTranslateRequest()
+    params = {
+        "SessionUuid": "default",
+        "Scene": "doc",
+        "Data": img_base64,
+        "Source": "zh",
+        "Target": "en",
+        "ProjectId": 1262395
+    }
+    req.from_json_string(json.dumps(params))
 
-        # process response
-        text_cn = []
-        text_en = []
+    resp = client.ImageTranslate(req)
 
-        resp_dict = json.loads(resp.to_json_string())
-        for val in resp_dict["ImageRecord"]["Value"]:
-            text_cn.append(val["SourceText"])
-            text_en.append(val["TargetText"])
+    # process response
+    text_cn = []
+    text_en = []
 
-        return ".".join(text_cn), ".".join(text_en)
+    resp_dict = json.loads(resp.to_json_string())
+    for val in resp_dict["ImageRecord"]["Value"]:
+        text_cn.append(val["SourceText"])
+        text_en.append(val["TargetText"])
 
-    except TencentCloudSDKException as err:
-        print(err)
-    
-    return None
+    return ".".join(text_cn), ".".join(text_en)
 
 def tencent_handwriting_ocr(img_base64):
-    try:
-        cred = credential.EnvironmentVariableCredential().get_credential()
-        httpProfile = HttpProfile()
-        httpProfile.endpoint = "ocr.tencentcloudapi.com"
 
-        clientProfile = ClientProfile()
-        clientProfile.httpProfile = httpProfile
-        client = ocr_client.OcrClient(cred, "ap-shanghai", clientProfile)
+    cred = credential.EnvironmentVariableCredential().get_credential()
+    httpProfile = HttpProfile()
+    httpProfile.endpoint = "ocr.tencentcloudapi.com"
 
-        req = ocr_models.GeneralHandwritingOCRRequest()
-        params = {
-            "ImageBase64": img_base64
-        }
-        req.from_json_string(json.dumps(params))
+    clientProfile = ClientProfile()
+    clientProfile.httpProfile = httpProfile
+    client = ocr_client.OcrClient(cred, "ap-shanghai", clientProfile)
 
-        resp = client.GeneralHandwritingOCR(req)
+    req = ocr_models.GeneralHandwritingOCRRequest()
+    params = {
+        "ImageBase64": img_base64
+    }
+    req.from_json_string(json.dumps(params))
 
-        # response
+    resp = client.GeneralHandwritingOCR(req)
 
-        text_cn = []
+    # response
 
-        resp_dict = json.loads(resp.to_json_string())
-        for val in resp_dict["TextDetections"]:
-            text_cn.append(val["DetectedText"])
+    text_cn = []
 
-        return ".".join(text_cn)
+    resp_dict = json.loads(resp.to_json_string())
+    for val in resp_dict["TextDetections"]:
+        text_cn.append(val["DetectedText"])
 
-    except TencentCloudSDKException as err:
-        print(err)
-    
-    return None
+    return ".".join(text_cn)

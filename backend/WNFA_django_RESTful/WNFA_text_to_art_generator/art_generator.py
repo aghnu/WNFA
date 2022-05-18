@@ -1,4 +1,4 @@
-from WNFA_text_to_art_generator.image_translate_tencent import tencent_handwriting_ocr, tencent_text_translate
+from WNFA_text_to_art_generator.image_translate_tencent import tencent_handwriting_ocr, tencent_text_translate, tencent_img_translate
 from WNFA_text_to_art_generator.image_processing import GridArt, is_chinese_char
 from WNFA_text_to_art_generator.emotion_analysis import predict_emo
 
@@ -44,12 +44,16 @@ class ArtGeneratorFromImage:
         self.img_base64 = str(img_base64)
 
     def generate(self):
+        '''
+        Use OCR + text translation first, if error occurs
+        fallback to image translation -> not good with hand writing chinese characters -> result is not determined each try
+        '''        
+        try:
+            cn_text = tencent_handwriting_ocr(self.img_base64)
+            eng_text = tencent_text_translate(cn_text)
+        except:
+            cn_text, eng_text = tencent_img_translate(self.img_base64)
 
-        # cn_text, eng_text = tencent_img_translate(self.img_base64)
-        # cn_text, eng_text = ("测试文本", "testing text")
-
-        cn_text = tencent_handwriting_ocr(self.img_base64)
-        eng_text = tencent_text_translate(cn_text)
 
         if len([c for c in list(cn_text) if is_chinese_char(c)]) == 0:
             raise ValueError

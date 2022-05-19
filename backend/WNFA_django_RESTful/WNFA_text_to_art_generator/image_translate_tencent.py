@@ -70,7 +70,7 @@ def tencent_img_translate(img_base64):
         text_cn.append(val["SourceText"])
         text_en.append(val["TargetText"])
 
-    return ".".join(text_cn), ".".join(text_en)
+    return ".".join(text_cn) + ".", ".".join(text_en) + "."
 
 def tencent_handwriting_ocr(img_base64):
 
@@ -98,4 +98,4 @@ def tencent_handwriting_ocr(img_base64):
     for val in resp_dict["TextDetections"]:
         text_cn.append(val["DetectedText"])
 
-    return ".".join(text_cn)
+    return "，".join(text_cn) + "。"

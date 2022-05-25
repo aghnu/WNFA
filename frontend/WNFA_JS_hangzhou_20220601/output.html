@@ -31,6 +31,13 @@
         margin: 0;
     }
 
+    #texture {
+        position: fixed;
+        height: 100vh;
+        width: 100vw;
+        object-fit: fill;
+    }
+
     #showcase {
         display: block;
         height: 100vh;
@@ -39,6 +46,11 @@
     }
 
     #emotion-data-container {
+        display: flex;
+        flex-direction: column;
+
+        gap: 1vh;
+
         position: fixed;
         right: 2.5vw;
         top: 2.5vh;
@@ -48,10 +60,37 @@
         margin: 0;
         padding: 0;
         color: grey;
-        filter: grayscale(100%) sepia(100%) hue-rotate(90deg);
-        font-size: 2.5vh;
-        line-height: 2.5vh;
+        filter: grayscale(100%) sepia(100%) hue-rotate(0deg);
+
+        font-size: 3vh;
+        line-height: 3vh;
     }
+
+    #emotion-data-container .section {
+        display: flex;
+        gap: 2vw;
+
+        background-color: black;
+
+    }
+
+    #emotion-data-container .symbol {
+        height: 3vh;
+        filter: grayscale(100%) sepia(100%) hue-rotate(0deg);
+        object-fit: contain;
+    }
+
+    #emotion-data-container .name {
+        text-transform: uppercase;
+        width: 10vw;
+    }
+
+    #emotion-data-container .value {
+        visibility: visible;
+    }
+
+
+
 
 </style>
 <script>
@@ -91,12 +130,58 @@
         return el;
     }
 
+    function initEmotionDataElements() {
+        const emotions = ['anger', 'disgust', 'fear', 'joy', 'neutral', 'sadness', 'shame', 'surprise', 'happiness'];
+        emotions.forEach((name) => {
+            const container = document.getElementById('emotion-data-container');
+
+            const section = document.createElement('div');
+            const emo_symbol = document.createElement('img');
+            const emo_name = document.createElement('p');
+            const emo_value = document.createElement('p');
+
+            emo_symbol.src = './static/img/emotion_symbols/' + name + '.png';
+            emo_name.innerHTML = name + ":";
+            emo_value.innerHTML = "0.0000";
+
+            section.classList.add('section');
+            emo_symbol.classList.add('symbol');
+            emo_name.classList.add('name');
+            emo_value.classList.add('value');
+
+            emo_value.setAttribute('id', "emo-" + name);
+
+            section.appendChild(emo_symbol);
+            section.appendChild(emo_name);
+            section.appendChild(emo_value);
+
+            container.appendChild(section);
+        });
+    }
+
+    let flashInterval = null;
+
     function updateEmotionData(emotion_data) {
-        const container = document.querySelector('#emotion-data-container');
+        let largest_value = null;
+        let largest_value_el = null;
+        clearInterval(flashInterval);
         for (emo in emotion_data) {
-            value = emotion_data[emo].toFixed(4);
-            container.appendChild(createTextElement(emo + ":" + "&nbsp" + value));
+            const value = emotion_data[emo].toFixed(4);
+            const el = document.getElementById('emo-' + emo);
+            if (value > largest_value) {
+                largest_value = value;
+                largest_value_el = el;
+            }
+            el.innerHTML = value;
         }
+        flashInterval = setInterval(() => {
+            if (largest_value_el.style.visibility === "visible") {
+                largest_value_el.style.visibility = "hidden";
+            } else {
+                largest_value_el.style.visibility = "visible";
+            }
+        }, 500)
+
     }
 
     
@@ -109,6 +194,8 @@
         let recentN = (urlHash === '') ? 0 : parseInt(urlHash.split('#')[1]);
         let old_art_id= null;
         
+        initEmotionDataElements();
+
         getMostNRecentRecord(recentN, (d) => {
             if (d.art_id != old_art_id) {
                 old_art_id = d.art_id;
@@ -119,16 +206,17 @@
             }
         });   
 
-        // setInterval(() => {
-        //     getMostNRecentRecord(recentN, (d) => {
-        //         if (d.art_id != old_art_id) {
-        //             old_art_id = d.art_id;
-        //             getArtsByID(d.art_id, (d) => {
-        //                 image.src = "data:image/jpeg; base64," + d.data;
-        //             });
-        //         }
-        //     });            
-        // }, 2000);
+        setInterval(() => {
+            getMostNRecentRecord(recentN, (d) => {
+                if (d.art_id != old_art_id) {
+                    old_art_id = d.art_id;
+                    getArtsByID(d.art_id, (d) => {
+                        image.src = "data:image/jpeg; base64," + d.data;
+                        updateEmotionData(d.emotion_data);
+                    });
+                }
+            });            
+        }, 2500);
 
 
 
@@ -136,8 +224,8 @@
     
 </script>
 <body>
+    <img src="./static/img/texture light.png" id="texture">
     <img id="showcase">
-    <div id="emotion-data-container">
-    </div>
+    <div id="emotion-data-container"></div>
 </body>
 </html>

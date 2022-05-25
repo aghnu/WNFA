@@ -93,6 +93,9 @@ class EmotionDataParser:
     def get_main_emotion(self):
         return self.emotion_data_sorted[0]
     
+    def get_major_emotion_candidates(self):
+        return self.emotion_data_sorted[0:3]
+
     def get_least_emotion(self):
         return self.emotion_data_sorted[-1]
     
@@ -153,12 +156,19 @@ Generate a grid art when provided with emotion data
 '''
 class GridArt:
     def __init__(self, emotion_data, record):
-        self.data_parser = EmotionDataParser(emotion_data)                          # emotion data parser
-        self.random_generator = ControlledRandomGenerator(emotion_data)             # seeded random generator
-        self.out = np.zeros((OUT_RES_HEIGHT, OUT_RES_WIDTH, 4), dtype=np.ubyte)     # output image
+        # CORRECTION
+        # 'happy' is used as foldname to grab asset, however, happiness is used in emotion_data
+        # here we change the key 'happiness' to 'happy' for easy fix
+        emotion_data['happy'] = emotion_data['happiness']
+        emotion_data.pop('happiness', None)
+        # END
+
+        self.data_parser = EmotionDataParser(emotion_data)                                                          # emotion data parser
+        self.random_generator = ControlledRandomGenerator(emotion_data)                                             # seeded random generator
+        self.out = np.zeros((OUT_RES_HEIGHT, OUT_RES_WIDTH, 4), dtype=np.ubyte)                                     # output image
         self.out[:,:] = [255,255,255,255]
-        self.major_emotion = self.data_parser.get_main_emotion()                    # major emotion
-        self.record = record                                                        # (base64, text_cn, text_en)
+        self.major_emotion = self.random_generator.select_list(self.data_parser.get_major_emotion_candidates())     # major emotion
+        self.record = record                                                                                        # (base64, text_cn, text_en)
 
     def get_list_of_valid_files(self, relative_path):
         file_list = \

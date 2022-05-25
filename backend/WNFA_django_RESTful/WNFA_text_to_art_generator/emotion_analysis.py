@@ -10,4 +10,6 @@ def predict_emo(text):
 	results_dict = dict()
 	for index in range(len(classes)):
 		results_dict[classes[index]] = results[0][index]
+
+	results_dict['happiness'] = abs(results_dict['surprise'] - results_dict['joy']) * 1.2
 	return results_dict

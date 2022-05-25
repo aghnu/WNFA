@@ -24,4 +24,5 @@ class ArtSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'data',
+            'emotion_data'
         ]

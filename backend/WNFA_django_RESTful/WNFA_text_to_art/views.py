@@ -1,3 +1,4 @@
+from copyreg import constructor
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -9,6 +10,8 @@ from .serializers import RecordSerializer, ArtSerializer
 
 from WNFA_text_to_art_generator.art_generator import ArtGeneratorFromImage
 import base64
+
+import json
 
 
 class TicketSubmission(APIView):
@@ -26,7 +29,8 @@ class TicketSubmission(APIView):
             # create record and art
             try:
                 art_new = Art(
-                    data = img_gen_obj.image_bytes
+                    data = img_gen_obj.image_bytes,
+                    emotion_data = img_gen_obj.emotion_data
                 )
                 art_new.save()
 
@@ -102,5 +106,7 @@ class ArtDetail(APIView):
     def get(self, request, art_id):
         art = self.get_art(art_id)
         art_base64 = base64.b64encode(art.data)
+        print(art.emotion_data)
+        emotion_data = json.loads(art.emotion_data)
 
-        return Response({"id": art.id, "data": art_base64}, status=status.HTTP_200_OK)
+        return Response({"id": art.id, "data": art_base64, "emotion_data": emotion_data}, status=status.HTTP_200_OK)

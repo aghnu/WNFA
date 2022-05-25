@@ -6,13 +6,15 @@ import base64
 import io
 from PIL import Image
 import numpy as np
+import json
 
 
 class ArtOBJ:
-    def __init__(self, image_bytes, text_en = None, text_cn = None):
+    def __init__(self, image_bytes, text_en = None, text_cn = None, emotion_data=None):
         self.image_bytes = image_bytes
         self.text_en = text_en
         self.text_cn = text_cn
+        self.emotion_data = emotion_data
 
 ''' 
     this class is used to generate an art in the absence of concrete data, 
@@ -54,7 +56,6 @@ class ArtGeneratorFromImage:
         except:
             cn_text, eng_text = tencent_img_translate(self.img_base64)
 
-
         if len([c for c in list(cn_text) if is_chinese_char(c)]) == 0:
             raise ValueError
 
@@ -76,4 +77,4 @@ class ArtGeneratorFromImage:
         buff = io.BytesIO()
         img_pil.save(buff, format="JPEG")
 
-        return ArtOBJ(buff.getvalue(), eng_text, cn_text)
+        return ArtOBJ(buff.getvalue(), eng_text, cn_text, json.dumps(emotion_data))

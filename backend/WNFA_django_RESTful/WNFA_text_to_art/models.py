@@ -2,6 +2,7 @@ from django.db import models
 
 class Art(models.Model):
     data = models.BinaryField()
+    emotion_data = models.TextField()
 
 class Record(models.Model):
     request_time = models.DateTimeField(auto_now_add=True)

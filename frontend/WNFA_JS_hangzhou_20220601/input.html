@@ -63,12 +63,6 @@
             display: none;
         }
 
-        #terminal-layer.standby {
-            top: 60.5vh;
-            padding-top: 0;
-            height: 5.5vh;
-        }
-
         #terminal-layer > p {
             font-size: 2.5vh;
             line-height: 2.5vh;
@@ -78,19 +72,6 @@
 
         #terminal-layer > p.cn {
             font-size: 2vh;
-        }
-
-        #WNFA-heart {
-            display: none;
-            position: fixed;
-            height: 45.5vh;
-            width: 46vw;
-            top: 10vh;
-            left: 20vw;
-            padding: 5vh 7vw 0vh 7vw;
-            object-fit: contain;
-            background-color: black;
-            filter: grayscale(100%) sepia(100%) hue-rotate(90deg);
         }
 
         #logo {
@@ -239,7 +220,6 @@
         function terminalAnimeWaiting(textList, terminal_layer) {
             
             let textListIndex = 0;
-            const WNFA_heart = document.querySelector("#WNFA-heart");
             const video = document.querySelector("#video");
             video.style.display = "none";
 
@@ -253,11 +233,6 @@
             let printTextListInterval = setInterval(() => {
                 if (textListIndex >= textList.length) {
                     clearInterval(printTextListInterval);
-                    screenTransitionFlash(()=>{
-                        WNFA_heart.style.display = "block";
-                        terminal_layer.classList.add("standby");
-                        flashCursor.scrollIntoView(true);                        
-                    });
  
                 } else {
                     let text_obj = textList[textListIndex++];
@@ -272,8 +247,6 @@
             return () => {
                 video.style.display = "block"
                 clearInterval(printTextListInterval);
-                WNFA_heart.style.display = "none";
-                terminal_layer.classList.remove("standby");
                 terminal_layer.innerHTML = "";
             }
         }
@@ -387,7 +360,6 @@
     </div>
     <div id="second-layer">
         <img id="transition-gif" src="./static/img/transition_animation.gif">
-        <img id="WNFA-heart" src="./static/img/heart.gif">
         <video id="video"></video>
         <canvas id="canvas" height=1080 width=1920></canvas> 
         <div id="terminal-layer"></div>        

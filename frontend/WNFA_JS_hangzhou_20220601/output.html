@@ -7,15 +7,52 @@
     <title>Document</title>
 </head>
 <style>
+    @font-face {
+        font-family: "Classic Console Neue";
+        font-size: normal;
+        font-weight: 400;
+        src: url(./static/font/classic_console_neue.ttf) format("truetype");
+    }
+
+    @font-face {
+        font-family: "Sim Sun";
+        font-size: normal;
+        font-weight: 400;
+        src: url(./static/font/sim_sun.ttf) format("truetype");
+    }
+
     html {
         background-color: black;
+        font-family: "Classic Console Neue", "HYBaoSongJ";
+    }
+
+    body {
+        padding: 0;
+        margin: 0;
     }
 
     #showcase {
+        display: block;
         height: 100vh;
         width: 100vw;
-        object-fit: contain;
+        object-fit: fill;
     }
+
+    #emotion-data-container {
+        position: fixed;
+        right: 2.5vw;
+        top: 2.5vh;
+    }
+
+    #emotion-data-container p {
+        margin: 0;
+        padding: 0;
+        color: grey;
+        filter: grayscale(100%) sepia(100%) hue-rotate(90deg);
+        font-size: 2.5vh;
+        line-height: 2.5vh;
+    }
+
 </style>
 <script>
     const url = new URL(window.location);
@@ -48,6 +85,20 @@
             }); 
     }
 
+    function createTextElement(text) {
+        const el = document.createElement('p');
+        el.innerHTML = text;
+        return el;
+    }
+
+    function updateEmotionData(emotion_data) {
+        const container = document.querySelector('#emotion-data-container');
+        for (emo in emotion_data) {
+            value = emotion_data[emo].toFixed(4);
+            container.appendChild(createTextElement(emo + ":" + "&nbsp" + value));
+        }
+    }
+
     
     window.addEventListener('load', () => {
 
@@ -57,17 +108,27 @@
         console.log(urlHash);
         let recentN = (urlHash === '') ? 0 : parseInt(urlHash.split('#')[1]);
         let old_art_id= null;
+        
+        getMostNRecentRecord(recentN, (d) => {
+            if (d.art_id != old_art_id) {
+                old_art_id = d.art_id;
+                getArtsByID(d.art_id, (d) => {
+                    image.src = "data:image/jpeg; base64," + d.data;
+                    updateEmotionData(d.emotion_data);
+                });
+            }
+        });   
 
-        setInterval(() => {
-            getMostNRecentRecord(recentN, (d) => {
-                if (d.art_id != old_art_id) {
-                    old_art_id = d.art_id;
-                    getArtsByID(d.art_id, (d) => {
-                        image.src = "data:image/jpeg; base64," + d.data;
-                    });
-                }
-            });            
-        }, 2000);
+        // setInterval(() => {
+        //     getMostNRecentRecord(recentN, (d) => {
+        //         if (d.art_id != old_art_id) {
+        //             old_art_id = d.art_id;
+        //             getArtsByID(d.art_id, (d) => {
+        //                 image.src = "data:image/jpeg; base64," + d.data;
+        //             });
+        //         }
+        //     });            
+        // }, 2000);
 
 
 
@@ -76,5 +137,7 @@
 </script>
 <body>
     <img id="showcase">
+    <div id="emotion-data-container">
+    </div>
 </body>
 </html>

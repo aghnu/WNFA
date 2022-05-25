@@ -22,7 +22,7 @@
 
         html {
             background-color: black;
-            font-family: "Classic Console Neue", "HYBaoSongJ";
+            font-family: "Classic Console Neue", "Sim Sun";
         }
 
         #transition-gif {
@@ -103,6 +103,7 @@
             height: 100vh;
             width: 100vw;
             margin: auto;
+            /* z-index: 1000; */
         }
 
         #monitor-engraving {
@@ -110,6 +111,23 @@
             height: 12vh;
             top: 71vh;
             right: 19vw;
+            z-index: 1100;
+        }
+
+        #monitor-prompt-text {
+            display: block;
+            height: 12vh;
+            position: fixed;
+            top: 16vh;
+            left: 26vw;
+        }
+
+        #monitor-prompt-enter {
+            display: block;
+            height: 22vh;
+            position: fixed;
+            top: 43vh;
+            right: 26vw;
         }
 
 
@@ -357,15 +375,14 @@
     <div id="top-layer">
         <img id="monitor-frame" src="./static/img/monitor_frame.png">
         <img id="monitor-engraving" src="./static/img/monitor_engraving.png">
+        <img id="monitor-prompt-text" src="./static/img/input_prompt_1.png">
+        <img id="monitor-prompt-enter" src="./static/img/input_prompt_2.png">
     </div>
     <div id="second-layer">
         <img id="transition-gif" src="./static/img/transition_animation.gif">
         <video id="video"></video>
         <canvas id="canvas" height=1080 width=1920></canvas> 
-        <div id="terminal-layer"></div>        
+        <div id="terminal-layer"></div>
     </div>
-
-        
- 
 </body>
 </html>

@@ -65,6 +65,8 @@ class ArtGeneratorFromImage:
         print(eng_text)
         print(emotion_data)
 
+        emotion_data_json_string = json.dumps(emotion_data)
+
         record = {
             'base64': self.img_base64,
             'text_cn': cn_text,
@@ -77,4 +79,4 @@ class ArtGeneratorFromImage:
         buff = io.BytesIO()
         img_pil.save(buff, format="JPEG")
 
-        return ArtOBJ(buff.getvalue(), eng_text, cn_text, json.dumps(emotion_data))
+        return ArtOBJ(buff.getvalue(), eng_text, cn_text, emotion_data_json_string)

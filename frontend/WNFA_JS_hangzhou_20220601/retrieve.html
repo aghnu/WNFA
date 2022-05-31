@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WNFA RETRIEVE</title>
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            // CONST
+            let input_id = "";
+            const retrieve_btn = document.getElementById('input-submit');
+            const interface_el = document.getElementById('system-interface');
+            const input_el = document.getElementById('input-id');
+
+            const url = new URL(window.location);
+            const endpointURL = (url.searchParams.get('endpoint')) ? (url.searchParams.get('endpoint')) : "http://localhost:8000/";
+            const artsAPIURL = "api/arts";
+            const recordsAPIURL = "api/records";
+            
+            // functions
+            function getRecordsById(id, callback) {
+                fetch(endpointURL + recordsAPIURL + "/" + id)
+                    .then((r) => {
+                        if (r.status === 200) {
+                            r.json().then((d) => {
+                                callback(d);
+                            })                            
+                        }
+                    })
+                    .catch((e) => {
+                        console.log("error", e);
+                    }); 
+            }
+
+            function getArtsByID(id, callback) {
+                fetch(endpointURL + artsAPIURL + "/" + id)
+                    .then((r) => {
+                        if (r.status === 200) {
+                            r.json().then((d) => {
+                                callback(d);
+                            })                            
+                        }
+                    })
+                    .catch((e) => {
+                        console.log("error", e);
+                    }); 
+            }
+            
+            function retrieveRecordArt(record_id, callback) {
+                const record_data = {
+                    record_id:      null,
+                    text_cn:        null,
+                    text_en:        null,
+                    emotion_data:   null,
+                    art_base64:     null,
+                    timestamp:      null,             
+                }
+
+                getRecordsById(record_id, (d) => {
+                    record_data.record_id = record_id;
+                    record_data.text_cn = d.poem_cn;
+                    record_data.text_en = d.poem_en;
+                    record_data.timestamp = d.request_time;
+
+                    getArtsByID(d.art_id, (dd) => {
+                        record_data.emotion_data = dd.emotion_data;
+                        record_data.art_base64 = dd.data;
+                        callback(record_data);
+                    });
+                });
+            }
+
+            function displayRecordArt(record_data) {
+                document.querySelector('#showcase').src = "data:image/jpeg; base64," + record_data.art_base64;;
+                for (emo in record_data.emotion_data) {
+                    const value = record_data.emotion_data[emo].toFixed(4);
+                    const el = document.getElementById('emo-' + emo);
+                    el.innerHTML = emo.toUpperCase() + ": " + value;
+                }
+                
+                console.log({"ID": record_data.record_id, "CN": record_data.text_cn, "EN": record_data.text_en})
+                document.querySelector('#timestamp').innerHTML = "TIMESTAMP: "+ record_data.timestamp;
+                document.querySelector('#poem-cn').innerHTML = record_data.text_cn;
+                document.querySelector('#poem-en').innerHTML = record_data.text_en;
+
+            }
+
+            function main() {
+                // interface
+                interface_el.classList.add('show');
+
+                // retrieve button
+                retrieve_btn.addEventListener('click', () => {
+                    
+                    retrieveRecordArt(input_id, (data) => {
+                        // display data
+                        displayRecordArt(data);
+                    });
+                    input_id = "";
+                    input_el.value = input_id;
+                })
+
+                // input element
+                input_el.addEventListener('input', (e) => {
+                    const char = e.target.value;
+                    input_el.value = input_id;
+                    if (!isNaN(Number(char))) {
+                        input_id = char;
+                        input_el.value = input_id;
+                    }
+                });
+                input_el.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        retrieve_btn.click();
+                    }
+                })                
+            }
+
+            // // run
+            // main();
+            
+            // test
+            main();
+            input_id = '2';
+            retrieve_btn.click();
+            
+        });
+        
+    </script>
+    <style>
+        @font-face {
+            font-family: "Classic Console Neue";
+            font-size: normal;
+            font-weight: 400;
+            src: url(./static/font/classic_console_neue.ttf) format("truetype");
+        }
+    
+        @font-face {
+            font-family: "Noto Sans SC";
+            font-size: normal;
+            font-weight: 400;
+            src: url(./static/font/NotoSansSC-Medium.otf) format("opentype");
+        }
+
+        html {
+            background-color: black;
+            color: white;
+            font-family: "Classic Console Neue", "Noto Sans SC";
+            font-size: 2vh;
+            line-height: 2vh;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #system-interface{
+            display: none;
+        }
+
+        #system-interface.show {
+            display: block;
+        }
+
+        #showcase {
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: 50% 25%;
+        }
+
+
+        #info-container-emo {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            background-color: rgba(0,0,0,0.75);
+        }
+
+        #info-container-other {
+            display: block;
+            word-break: break-all;
+            word-wrap: break-word;
+            text-align: center;
+            font-size: 2vh;
+            line-height: 2vh;
+            background-color: rgba(0,0,0,0.75);
+        }
+
+        #input-id-interface {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #info-container {
+            width: 100%;
+            /* height: 10vh; */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        #info-container p {
+            margin: 0;
+            padding: 0;
+            color: grey;
+            filter: grayscale(100%) sepia(100%) hue-rotate(0deg);
+        }
+        
+
+        #input-container {
+            display: flex;
+            width: 80vw;
+            filter: grayscale(100%) sepia(100%) hue-rotate(0deg);
+            color: black;
+            background-color: gray;
+            width: 100vw;
+            height: 2vh;
+            justify-content: space-between;
+        }
+
+        #input-submit {
+            all: unset;
+            width: fit-content;
+            font-family: "Classic Console Neue", "Noto Sans SC";
+            text-align: center;
+            cursor: pointer;
+            color: black;
+            font-size: 2vh;
+            line-height: 2vh;
+        }
+
+        #input-content-container {
+            display: flex;
+
+        }
+
+        #input-id {
+            all: unset;
+            width: 50%;
+            background-color: transparent;
+            color: white;
+            font-family: "Classic Console Neue", "Noto Sans SC";
+            color: black;
+            font-size: 2vh;
+            line-height: 2vh;
+            
+        }
+
+
+        #input-label {
+            margin: 0;
+            padding: 0;
+            width: fit-content;
+            color: black;
+            font-size: 2vh;
+            line-height: 2vh;
+        }
+
+        #poem-cn {
+            font-size: 1.7vh;
+        }
+
+
+    </style>
+</head>
+
+
+<body>
+    <div id="system-interface">
+        <div id="display-interface">
+            <img id="showcase">
+
+        </div>
+        <div id="input-id-interface">
+            <div id="info-container">
+                <div id="info-container-emo">
+                    <div>
+                        <p id="emo-anger">ANGER: 0</p>
+                        <p id="emo-disgust">DIGUST: 0</p>
+                        <p id="emo-fear">FEAR: 0</p>
+                    </div>
+                    <div>
+                        <p id="emo-joy">JOY: 0</p>
+                        <p id="emo-neutral">NEUTRAL: 0</p>
+                        <p id="emo-sadness">SADNESS: 0</p>
+
+                    </div>
+                    <div>
+                        <p id="emo-shame">SHAME: 0</p>
+                        <p id="emo-surprise">SURPRISE: 0</p>
+                        <p id="emo-happiness">HAPPINESS: 0</p>
+                    </div>                    
+                </div>
+                <div id="info-container-other">
+                    <div>
+                        <p id="timestamp">TIMEDATE: </p>
+                        <p id="poem-cn">中文文本</p>
+                        <p id="poem-en">English Translation</p>
+                    </div>                    
+                </div>
+
+            </div>
+            <div id="input-container">
+                
+                <div id="input-content-container">
+                    <p id="input-label">RECORD ID&nbsp>&nbsp</p>
+                    <input type="text" id="input-id">
+                </div>
+                
+                <button id="input-submit">Retrieve</button>
+            </div>
+            
+        </div>
+    </div>
+</body>
+</html>

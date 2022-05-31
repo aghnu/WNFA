@@ -9,7 +9,8 @@ class RecordSerializer(serializers.ModelSerializer):
             'id',
             'poem_en',
             'poem_cn',
-            'art_id'
+            'art_id',
+            'request_time',
         ]
 
 # class RecordListSerializer(serializers.ModelSerializer):

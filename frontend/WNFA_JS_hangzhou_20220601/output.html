@@ -4,235 +4,227 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<style>
-    @font-face {
-        font-family: "Classic Console Neue";
-        font-size: normal;
-        font-weight: 400;
-        src: url(./static/font/classic_console_neue.ttf) format("truetype");
-    }
-
-    @font-face {
-        font-family: "Sim Sun";
-        font-size: normal;
-        font-weight: 400;
-        src: url(./static/font/sim_sun.ttf) format("truetype");
-    }
-
-    html {
-        background-color: black;
-        font-family: "Classic Console Neue", "Sim Sun";
-    }
-
-    body {
-        padding: 0;
-        margin: 0;
-    }
-
-    #texture {
-        position: fixed;
-        height: 100vh;
-        width: 100vw;
-        object-fit: fill;
-        pointer-events: none;
-    }
-
-    #showcase {
-        display: block;
-        height: 100vh;
-        width: 100vw;
-        object-fit: fill;
-    }
-
-    #emotion-data-container {
-        display: flex;
-        flex-direction: column;
-
-        gap: 1vh;
-
-        position: fixed;
-        right: 0;
-        top: 0;
-    }
-
-    #emotion-data-container p,
-    #id-container p {
-        margin: 0;
-        padding: 0;
-        color: grey;
-        filter: grayscale(100%) sepia(100%) hue-rotate(0deg);
-
-        font-size: 2.5vh;
-        line-height: 2.5vh;
-    }
-
-    #emotion-data-container .section {
-        display: flex;
-        gap: 2vw;
-
-        background-color: rgba(0,0,0,0.75);
-
-    }
-
-    #emotion-data-container .symbol {
-        height: 2.5vh;
-        filter: grayscale(100%) sepia(100%) hue-rotate(0deg);
-        object-fit: contain;
-    }
-
-    #emotion-data-container .name {
-        text-transform: uppercase;
-        width: 10vw;
-    }
-
-    #emotion-data-container .value {
-        visibility: visible;
-    }
-
-    #id-container {
-        position: fixed;
-        bottom: 0;
-        right: 0;
-        background-color: rgba(0,0,0,0.75);
-    }
-
-
-
-
-</style>
-<script>
-    const url = new URL(window.location);
-    const endpointURL = (url.searchParams.get('endpoint')) ? (url.searchParams.get('endpoint')) : "http://localhost:8000/";
+    <title>WNFA OUTPUT</title>
+    <style>
+        @font-face {
+            font-family: "Classic Console Neue";
+            font-size: normal;
+            font-weight: 400;
+            src: url(./static/font/classic_console_neue.ttf) format("truetype");
+        }
     
-    const artsAPIURL = "api/arts";
-    const recordsAPIURL = "api/records";
+        @font-face {
+            font-family: "Sim Sun";
+            font-size: normal;
+            font-weight: 400;
+            src: url(./static/font/sim_sun.ttf) format("truetype");
+        }
     
-    function getMostNRecentRecord(recentN, callback) {
-        fetch(endpointURL + recordsAPIURL + "?select=" + recentN)
-            .then((r) => {
-                r.json().then((d) => {
-                    callback(d);
-                })
-            })
-            .catch((e) => {
-                console.log("error", e);
-            }); 
-    }
-
-    function getArtsByID(id, callback) {
-        fetch(endpointURL + artsAPIURL + "/" + id)
-            .then((r) => {
-                r.json().then((d) => {
-                    callback(d);
-                })
-            })
-            .catch((e) => {
-                console.log("error", e);
-            }); 
-    }
-
-    function createTextElement(text) {
-        const el = document.createElement('p');
-        el.innerHTML = text;
-        return el;
-    }
-
-    function initEmotionDataElements() {
-        const container = document.getElementById('emotion-data-container');
-        const emotions = ['anger', 'disgust', 'fear', 'joy', 'neutral', 'sadness', 'shame', 'surprise', 'happiness'];
-        emotions.forEach((name) => {
-            const section = document.createElement('div');
-            const emo_symbol = document.createElement('img');
-            const emo_name = document.createElement('p');
-            const emo_value = document.createElement('p');
-
-            emo_symbol.src = './static/img/emotion_symbols/' + name + '.png';
-            emo_name.innerHTML = name + ":";
-            emo_value.innerHTML = "0.0000";
-
-            section.classList.add('section');
-            emo_symbol.classList.add('symbol');
-            emo_name.classList.add('name');
-            emo_value.classList.add('value');
-
-            emo_value.setAttribute('id', "emo-" + name);
-
-            section.appendChild(emo_symbol);
-            section.appendChild(emo_name);
-            section.appendChild(emo_value);
-
-            container.appendChild(section);
-        });
-    }
-    const numAudioFiles = 18
-    function initAudio() {
-        const container = document.getElementById('audio-container');
+        html {
+            background-color: black;
+            font-family: "Classic Console Neue", "Sim Sun";
+        }
+    
+        body {
+            padding: 0;
+            margin: 0;
+        }
+    
+        #texture {
+            position: fixed;
+            height: 100vh;
+            width: 100vw;
+            object-fit: fill;
+            pointer-events: none;
+        }
+    
+        #showcase {
+            display: block;
+            height: 100vh;
+            width: 100vw;
+            object-fit: fill;
+        }
+    
+        #emotion-data-container {
+            display: flex;
+            flex-direction: column;
+    
+            gap: 1vh;
+    
+            position: fixed;
+            right: 0;
+            top: 0;
+        }
+    
+        #emotion-data-container p,
+        #id-container p {
+            margin: 0;
+            padding: 0;
+            color: grey;
+            filter: grayscale(100%) sepia(100%) hue-rotate(0deg);
+    
+            font-size: 2.5vh;
+            line-height: 2.5vh;
+        }
+    
+        #emotion-data-container .section {
+            display: flex;
+            gap: 2vw;
+    
+            background-color: rgba(0,0,0,0.75);
+    
+        }
+    
+        #emotion-data-container .symbol {
+            height: 2.5vh;
+            filter: grayscale(100%) sepia(100%) hue-rotate(0deg);
+            object-fit: contain;
+        }
+    
+        #emotion-data-container .name {
+            text-transform: uppercase;
+            width: 10vw;
+        }
+    
+        #emotion-data-container .value {
+            visibility: visible;
+        }
+    
+        #id-container {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            background-color: rgba(0,0,0,0.75);
+        }
+    
+    
+    
+    
+    </style>
+    <script>
+        const url = new URL(window.location);
+        const endpointURL = (url.searchParams.get('endpoint')) ? (url.searchParams.get('endpoint')) : "http://localhost:8000/";
         
-        for (let i = 0; i < numAudioFiles; i++) {
-            const audio = document.createElement('audio');
-            audio.src = "./static/sound/" + i + ".mp3";
+        const artsAPIURL = "api/arts";
+        const recordsAPIURL = "api/records";
+        
+        function getMostNRecentRecord(recentN, callback) {
+            fetch(endpointURL + recordsAPIURL + "?select=" + recentN)
+                .then((r) => {
+                    if (r.status === 200) {
+                        r.json().then((d) => {
+                            callback(d);
+                        })                            
+                    }
+                })
+                .catch((e) => {
+                    console.log("error", e);
+                }); 
+        }
+    
+        function getArtsByID(id, callback) {
+            fetch(endpointURL + artsAPIURL + "/" + id)
+                .then((r) => {
+                    if (r.status === 200) {
+                        r.json().then((d) => {
+                            callback(d);
+                        })                            
+                    }
+                })
+                .catch((e) => {
+                    console.log("error", e);
+                }); 
+        }
+    
+        function createTextElement(text) {
+            const el = document.createElement('p');
+            el.innerHTML = text;
+            return el;
+        }
+    
+        function initEmotionDataElements() {
+            const container = document.getElementById('emotion-data-container');
+            const emotions = ['anger', 'disgust', 'fear', 'joy', 'neutral', 'sadness', 'shame', 'surprise', 'happiness'];
+            emotions.forEach((name) => {
+                const section = document.createElement('div');
+                const emo_symbol = document.createElement('img');
+                const emo_name = document.createElement('p');
+                const emo_value = document.createElement('p');
+    
+                emo_symbol.src = './static/img/emotion_symbols/' + name + '.png';
+                emo_name.innerHTML = name + ":";
+                emo_value.innerHTML = "0.0000";
+    
+                section.classList.add('section');
+                emo_symbol.classList.add('symbol');
+                emo_name.classList.add('name');
+                emo_value.classList.add('value');
+    
+                emo_value.setAttribute('id', "emo-" + name);
+    
+                section.appendChild(emo_symbol);
+                section.appendChild(emo_name);
+                section.appendChild(emo_value);
+    
+                container.appendChild(section);
+            });
+        }
+        const numAudioFiles = 18
+        function initAudio() {
+            const container = document.getElementById('audio-container');
             
-            container.appendChild(audio);
-        }
-    }
-
-    let flashInterval = null;
-
-    function updateEmotionData(emotion_data, record_id) {
-
-        document.getElementById('art-id').innerHTML = "ID: " + record_id;
-
-        let largest_value = null;
-        let largest_value_el = null;
-        clearInterval(flashInterval);
-        for (emo in emotion_data) {
-            const value = emotion_data[emo].toFixed(4);
-            const el = document.getElementById('emo-' + emo);
-            if (value > largest_value) {
-                largest_value = value;
-                largest_value_el = el;
+            for (let i = 0; i < numAudioFiles; i++) {
+                const audio = document.createElement('audio');
+                audio.src = "./static/sound/" + i + ".mp3";
+                
+                container.appendChild(audio);
             }
-            el.innerHTML = value;
         }
-        flashInterval = setInterval(() => {
-            if (largest_value_el.style.visibility === "visible") {
-                largest_value_el.style.visibility = "hidden";
-            } else {
-                largest_value_el.style.visibility = "visible";
-            }
-        }, 500)
-
-        audios = document.querySelectorAll('#audio-container audio');
-        audios[Math.floor(Math.random() * numAudioFiles)].play();
-
-    }
-
     
-    window.addEventListener('load', () => {
-
-        const image = document.querySelector('#showcase');
-
-        let urlHash = window.location.hash;
-        console.log(urlHash);
-        let recentN = (urlHash === '') ? 0 : parseInt(urlHash.split('#')[1]);
-        let old_art_id= null;
-        
-        initEmotionDataElements();
-        initAudio();
-
-        getMostNRecentRecord(recentN, (d) => {
-            if (d.art_id != old_art_id) {
-                old_art_id = d.art_id;
-                getArtsByID(d.art_id, (dd) => {
-                    image.src = "data:image/jpeg; base64," + dd.data;
-                    updateEmotionData(dd.emotion_data, d.id);
-                });
+        let flashInterval = null;
+    
+        function updateEmotionData(emotion_data, record_id) {
+    
+            document.getElementById('art-id').innerHTML = "ID: " + record_id;
+    
+            let largest_value = null;
+            let largest_value_el = null;
+            clearInterval(flashInterval);
+            for (emo in emotion_data) {
+                const value = emotion_data[emo].toFixed(4);
+                const el = document.getElementById('emo-' + emo);
+                if (value > largest_value) {
+                    largest_value = value;
+                    largest_value_el = el;
+                }
+                el.innerHTML = value;
             }
-        });   
-
-        setInterval(() => {
+            flashInterval = setInterval(() => {
+                if (largest_value_el.style.visibility === "visible") {
+                    largest_value_el.style.visibility = "hidden";
+                } else {
+                    largest_value_el.style.visibility = "visible";
+                }
+            }, 500)
+    
+            audios = document.querySelectorAll('#audio-container audio');
+            audios[Math.floor(Math.random() * numAudioFiles)].play();
+    
+        }
+    
+        
+        window.addEventListener('load', () => {
+    
+            const image = document.querySelector('#showcase');
+    
+            let urlHash = window.location.hash;
+            console.log(urlHash);
+            let recentN = (urlHash === '') ? 0 : parseInt(urlHash.split('#')[1]);
+            let old_art_id= null;
+            
+            initEmotionDataElements();
+            initAudio();
+    
             getMostNRecentRecord(recentN, (d) => {
                 if (d.art_id != old_art_id) {
                     old_art_id = d.art_id;
@@ -241,11 +233,23 @@
                         updateEmotionData(dd.emotion_data, d.id);
                     });
                 }
-            });            
-        }, 2500);
-    });
+            });   
     
-</script>
+            setInterval(() => {
+                getMostNRecentRecord(recentN, (d) => {
+                    if (d.art_id != old_art_id) {
+                        old_art_id = d.art_id;
+                        getArtsByID(d.art_id, (dd) => {
+                            image.src = "data:image/jpeg; base64," + dd.data;
+                            updateEmotionData(dd.emotion_data, d.id);
+                        });
+                    }
+                });            
+            }, 2500);
+        });
+        
+    </script>
+</head>
 <body>
     <img src="./static/img/texture light.png" id="texture">
     <img id="showcase">

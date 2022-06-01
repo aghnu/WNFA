@@ -17,6 +17,9 @@ import json
 class TicketSubmission(APIView):
     def post(self, request):
         try:
+            record = None 
+            art = None
+
             try:
                 # generate art 
                 img_base64 = request.data["data"]
@@ -41,10 +44,13 @@ class TicketSubmission(APIView):
                 )
                 record_new.save()
 
+                record = record_new
+                art = art_new
+
             except:
                 raise BadRequest("Failed to store Art or Record")
 
-            return Response({}, status=status.HTTP_200_OK)
+            return Response({'record_id': record.id}, status=status.HTTP_200_OK)
         
         except:
             raise BadRequest("Failed to process ticket")

@@ -12,17 +12,17 @@
             font-weight: 400;
             src: url(./static/font/classic_console_neue.ttf) format("truetype");
         }
-
+    
         @font-face {
-            font-family: "Sim Sun";
+            font-family: "Noto Sans SC";
             font-size: normal;
             font-weight: 400;
-            src: url(./static/font/sim_sun.ttf) format("truetype");
+            src: url(./static/font/NotoSansSC-Medium.otf) format("opentype");
         }
 
         html {
             background-color: black;
-            font-family: "Classic Console Neue", "Sim Sun";
+            font-family: "Classic Console Neue", "Noto Sans SC";
         }
 
         #transition-gif {
@@ -182,8 +182,14 @@
                     'data': base64,
                 })
             })
-                .then(() => {
-                    callback(suc=true);
+                .then((r) => {
+                    if (r.status === 200) {
+                        r.json().then((d) => {
+                            callback(suc=true,d);
+                        })                            
+                    } else {
+                        callback(suc=false);
+                    }
                 })
                 .catch((e) => {
                     console.log('Error', e);
@@ -305,41 +311,65 @@
 
             const enterKeyhandler = () => {
                 enterKeyListener = () => {};                                            // disable enter key for the duration
-                
+                document.querySelector('#monitor-prompt-text').style.visibility = 'hidden';
+                document.querySelector('#monitor-prompt-enter').style.visibility = 'hidden';               
                 screenTransitionFlash(() => {
                     video.pause();                                                      // pause video
                     terminal_layer.style.display = "block";                             // turn on terminal layer
+
                     
                     let animationStopFunc = terminalAnimeWaiting(textList, terminal_layer);
                     let timeStart = performance.now();
                     let animationTimeNeeded = textList.length * 500 + 2000 + 500;
 
-                    submitPhotoTicket(takePhotoToBase64(video, canvas), (suc) => {      // take a photo and submit, then waiting for response       
+                    submitPhotoTicket(takePhotoToBase64(video, canvas), (suc, data) => {      // take a photo and submit, then waiting for response       
                         const stopSequenceFunc = () => {
                             if (suc) {
                                 // success
                                 // do terminal message
-                                screenTransitionFlash(()=>{
-                                    video.play();                               // start video
-                                    terminal_layer.style.display = "none";       // remove terminal layer
-                                    animationStopFunc();
-                                    enterKeyListener = enterKeyhandler;         // reenable enter key                                    
-                                });
+
+                                terminal_layer.insertBefore(createHTMLElement("p", "<br>"), flashCursor);
+                                terminal_layer.insertBefore(createHTMLElement("p", "*********************"), flashCursor);
+                                terminal_layer.insertBefore(createHTMLElement("p", "处理成功您的ID为: " + data.record_id, null, 'cn'), flashCursor);
+                                terminal_layer.insertBefore(createHTMLElement("p", "*********************"), flashCursor);
+                                flashCursor.scrollIntoView(true);
+
+                                setTimeout(() => {
+                                    screenTransitionFlash(()=>{
+                                        video.play();                               // start video
+                                        terminal_layer.style.display = "none";       // remove terminal layer
+                                        animationStopFunc();
+                                        enterKeyListener = enterKeyhandler;         // reenable enter key     
+                                        document.querySelector('#monitor-prompt-text').style.visibility = 'visible';
+                                        document.querySelector('#monitor-prompt-enter').style.visibility = 'visible';                               
+                                    });                                    
+                                }, 7500);
+
+
 
                                 
                             } else {
                                 // error
                                 // display terminal message error
                                 // countdown
-                                
+                                terminal_layer.insertBefore(createHTMLElement("p", "<br>"), flashCursor);
+                                terminal_layer.insertBefore(createHTMLElement("p", "*********************"), flashCursor);
+                                terminal_layer.insertBefore(createHTMLElement("p", "系统错误请重新尝试", null, 'cn'), flashCursor);
+                                terminal_layer.insertBefore(createHTMLElement("p", "*********************"), flashCursor);
+                                flashCursor.scrollIntoView(true);
+
                                 // return to working state
-                                screenTransitionFlash(()=>{
-                                    video.play();                               // start video
-                                    terminal_layer.style.display = "none";       // remove terminal layer
-                                    animationStopFunc();
-                                    enterKeyListener = enterKeyhandler;         // reenable enter key
-                                });
- 
+
+                                setTimeout(()=>{
+                                    screenTransitionFlash(()=>{
+                                        video.play();                               // start video
+                                        terminal_layer.style.display = "none";       // remove terminal layer
+                                        animationStopFunc();
+                                        enterKeyListener = enterKeyhandler;         // reenable enter key
+                                        document.querySelector('#monitor-prompt-text').style.visibility = 'visible';
+                                        document.querySelector('#monitor-prompt-enter').style.visibility = 'visible';  
+                                    });
+                                }, 7500);
                             }
                         }
                         let timeEnd = performance.now();
@@ -379,13 +409,14 @@
     <div id="top-layer">
         <img id="monitor-frame" src="./static/img/monitor_frame.png">
         <img id="monitor-engraving" src="./static/img/monitor_engraving.png">
-        <img id="monitor-prompt-text" src="./static/img/input_prompt_1.png">
-        <img id="monitor-prompt-enter" src="./static/img/input_prompt_2.png">
+
     </div>
     <div id="second-layer">
         <img id="transition-gif" src="./static/img/transition_animation.gif">
         <video id="video"></video>
         <canvas id="canvas" height=1080 width=1920></canvas> 
+        <img id="monitor-prompt-text" src="./static/img/input_prompt_1.png">
+        <img id="monitor-prompt-enter" src="./static/img/input_prompt_2.png">
         <div id="terminal-layer"></div>
     </div>
 </body>

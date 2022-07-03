@@ -1,13 +1,20 @@
-<p align="center">
-<img alt="WNFA_logo" width="400" src=https://user-images.githubusercontent.com/46549455/166193539-86e2fc97-2101-4783-9a8f-8a44e72f74e2.png>
-</p>
-
 <h1 align="center">
-Words Never Fall Apart
+WORDS NEVER FALL APART / 心的铁片
 </h1>
 
 <p align="left">
-WNFA (Words Never Fall Apart) is an interactive art project attempts to explore the meaning of poems to machines in an artistic and abstract way. This repo hosts the programming portion of the project. 
+WNFA/心的铁片 is an interactive art project attempts to explore the meaning of poems to machines in an artistic and abstract way. This repo hosts the programming portion of the project. 
+
+WNFA 3D Virtual Gallery: 
+https://www.aghnu.me/gallery/WNFA/
+</p>
+
+<h2 align="left">
+Results
+</h2>
+
+<p align="center">
+<img alt="WNFA_demo" width="100%" src=https://user-images.githubusercontent.com/46549455/177057075-0a8d9563-8972-456e-a4d1-84dd8a2e22c4.png>
 </p>
 
 <h2 align="left">

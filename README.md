@@ -7,6 +7,9 @@ WNFA/心的铁片 is an interactive art project attempts to explore the meaning 
 
 WNFA 3D Virtual Gallery: 
 https://www.aghnu.me/gallery/WNFA/
+
+WNFA Online Poster Generator (This version is modified and redesigned for online delivery)
+https://www.aghnu.me/WNFA/
 </p>
 
 <h2 align="left">
